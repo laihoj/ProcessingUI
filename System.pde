@@ -1,14 +1,10 @@
 class System {
   CSS_File css = null;
-  MouseListener mouseListener;
-  KeyboardListener keyboardListener;
   ArrayList<View> views;
   ArrayList<Command> commands;
   View active_view;
   View action_bar;
   System() {
-    mouseListener = new MouseListener();
-    keyboardListener = new KeyboardListener();
     views = new ArrayList<View>();
     commands = new ArrayList<Command>();
     active_view = null;
@@ -86,8 +82,12 @@ class System {
     }
   }
   void listen() {
-    this.mouseListener.listen();
-    this.keyboardListener.listen();
+    if(this.action_bar != null) {
+      this.action_bar.listen();
+    }
+    if(this.active_view != null) {
+      this.active_view.listen();
+    }
   }
   void execute() {
     for(Command command: this.commands) {

@@ -17,29 +17,7 @@ boolean isTargetEllipse(Point point, Dimensions dimensions) {
 
 
 
-/***********************************************************************************************/
-Button newButton(Command command, String text, color c, Point point, Dimensions dimensions) {
-  Button result = new Button(command,text,c,point,dimensions);
-  system.mouseListener.add(result);
-  return result;
-}
 
-//Button newButton(String css_class, String css_id, String css_name, String text, Point point, Dimensions dimensions) {
-//}
-
-//Button newButton(Command command, String text, String css_class, String css_id, String css_name, CSS_File css_file, Point point, Dimensions dimensions) {
-//  Button result = new Button(command,text,css_class,point,dimensions);
-//  system.mouseListener.add(result);
-//  return result;
-//}
-
-//preferable notation
-Button newButton(Attributes attributes, String text, Point point, Dimensions dimensions) {
-  Button result = new Button(attributes, text, point, dimensions);
-  system.mouseListener.add(result);
-  return result;
-}
-/***********************************************************************************************/
 
 
 

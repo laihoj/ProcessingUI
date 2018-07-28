@@ -6,13 +6,12 @@ void setup() {
   system = new System();
   system.add(new CSS_File("style.css"));
 
-  
   fullScreen();
+  
   frameRate(system.getInt("frameRate"));
   stroke(system.getInt("stroke"));
   textSize(system.getInt("textSize"));
   baseDeclarations();
-  //initialiseTextBoxDeclarations();
   initialiseHackDroneDeclarations();
 }
 

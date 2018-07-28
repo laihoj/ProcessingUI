@@ -24,7 +24,7 @@ To add a new listener,
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 interface MouseActivities {
-  Boolean isTarget();
+  boolean isTarget();
   void onHover();
   void onHoverOver();
   void onPress();
@@ -222,17 +222,17 @@ class KeyboardListener implements Listener {
 abstract class Observer implements MouseActivities, KeyboardActivities, Selectable {
   boolean pressed, hovering, selected;
   PVector pos = new PVector(0,0);
-  void connectListener(MouseListener listener) {
-    this.pressed = false;
-    this.hovering = false;
-    this.deselect();
-    listener.add(this);
-  }
+  String key;
+
+  /*Mouse stuff*/
   void hover(PVector mouse) {
     if(this.isTarget()) {
       this.hovering = true;
       this.onHover();
     } else {
+      if(this.hovering) {
+        this.onHoverOver();
+      }
       this.hovering = false;
     }
   }
@@ -256,10 +256,8 @@ abstract class Observer implements MouseActivities, KeyboardActivities, Selectab
     }
     this.pressed = false;    
   }
-    String key;
-  void connectListener(KeyboardListener listener) {
-    listener.add(this);
-  }
+
+  /*Keyboard stuff*/
   void press(char c) {
     if(this.isSelected()) {
       this.onKeyDown(c);
@@ -275,6 +273,8 @@ abstract class Observer implements MouseActivities, KeyboardActivities, Selectab
       this.onKeyUp(c);
     }
   }
+  
+  /*Selectable implementations*/
   void select() {
     this.selected = true;
   }

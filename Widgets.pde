@@ -51,11 +51,14 @@ class View {
   String name;
   ArrayList<Button> buttons = new ArrayList<Button>();
   ArrayList<Widget> widgets = new ArrayList<Widget>();
+  MouseListener mouseListener;
+  KeyboardListener keyboardListener;
   View() {
-    system.add(this);
-    this.name = "This view is anonymous";
+    this("ANON_VIEW");
   }
   View(String name) {
+    mouseListener = new MouseListener();
+    keyboardListener = new KeyboardListener();
     system.add(this);
     this.name = name;
   }
@@ -64,9 +67,13 @@ class View {
   }
   void add(Button button) {
     this.buttons.add(button);
+    this.mouseListener.add(button);
+    this.keyboardListener.add(button);
   }
   void add(Widget widget) {
     this.widgets.add(widget);
+    this.mouseListener.add(widget);
+    this.keyboardListener.add(widget);
   }
   void remove(Button button) {
     this.buttons.remove(button);
@@ -84,6 +91,10 @@ class View {
       }
     }
   }
+  void listen() {
+    this.mouseListener.listen();
+    this.keyboardListener.listen();
+  }
 }
 /***********************************************************************************************/
 
@@ -95,19 +106,24 @@ interface Displayable {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/*
+The way I've thought it out summer 2018 is that every visible UI element should extend the class Widget and implement a display method.
+The observer class makes sure that widgets can be given any functionality on human interaction, much similarly to html and javascript.
+Feel free to implement the on[Event] methods in extending classes to achieve functionality.
+*/
 /////////////////////////////////////////////////////////////////////////////////////////////////
 abstract class Widget extends Observer implements Displayable {
   Point point;
   Dimensions dimensions;
   Widget(Point point, Dimensions dimensions) {
-    system.mouseListener.add(this);
-    system.keyboardListener.add(this);
+    //system.mouseListener.add(this);
+    //system.keyboardListener.add(this);
     this.point = point;
     this.dimensions = dimensions;
   }
-  void display() {}
-  Boolean isTarget() {return false;}
   void onHover() {}
+  void onHoverOver() {}
   void onPress() {}
   void onDrag(PVector mouse) {}
   void onRelease() {}
@@ -130,6 +146,8 @@ class Widget_Placeholder extends Widget {
   Widget_Placeholder(Point point, Dimensions dimensions) {
     super(point,dimensions);
   }
+  void display() {}
+  boolean isTarget() {return false;}
 }
 /***********************************************************************************************/
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +211,7 @@ class Button extends Widget implements Command {
     text(text,point.x + dimensions.dims[0]/2,point.y+dimensions.dims[1]/2);
   }
   
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
   }
   void execute() {
@@ -230,18 +248,26 @@ class Rotator extends Widget {
     this.point = point;
     this.dimensions = dimensions;
   }
+  int getDiameter() {
+    return dimensions.dims[0];
+  }
   int getRadius() {
-    return dimensions.dims[0] / 2;
+    return getDiameter() / 2;
   }
   void display() {
    stroke(0);
    noFill();
    point(point.x,point.y);
-   ellipse(point.x,point.y,dimensions.dims[0],dimensions.dims[0]);
+   ellipse(point.x,point.y,getDiameter(),getDiameter());
    fill(0);
-   line(point.x, point.y, point.x + dimensions.dims[0] / 2 * cos(heading), point.y + dimensions.dims[0] / 2 * sin(heading));
+   //line(point.x, point.y, point.x + this.getRadius() * cos(heading), point.y + this.getRadius() * sin(heading));
+   pushMatrix();
+   translate(point.x, point.y);
+   rotate(heading);
+   line(0,0, this.getRadius(), 0);
+   popMatrix();
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetEllipse(this.point, this.dimensions);
   }
   void onHover() {}
@@ -281,8 +307,11 @@ class Joystick extends Widget {
     this.stick = new Point(this.point.x, this.point.y + (int)this.getRadius());
     this.resting = new Point(point);
   }
+  int getDiameter() {
+    return dimensions.dims[1];
+  }
   int getRadius() {
-    return dimensions.dims[1] / 2;
+    return getDiameter() / 2;
   }
   void rest() {
     this.stick = new Point(resting);
@@ -301,14 +330,14 @@ class Joystick extends Widget {
    stroke(0);
    noFill();
    point(point.x,point.y);
-   ellipse(point.x,point.y,dimensions.dims[1],dimensions.dims[1]);
+   ellipse(point.x,point.y,getDiameter(),getDiameter());
    if(this.pressed) fill(125);
    ellipse(stick.x,stick.y,dimensions.dims[0],dimensions.dims[0]);
    if(stick.dist(point) > dimensions.dims[0] / 2) {
      line(point.x, point.y, stick.x + dimensions.dims[0] / 2 * cos(point.heading(stick)), stick.y + dimensions.dims[0] / 2 * sin(point.heading(stick)));
    }
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetEllipse(this.stick, this.dimensions);
   }
   void onHover() {}
@@ -383,12 +412,9 @@ class CheckBox extends Widget {
     rectMode(CORNER);
     rect(point.x,point.y,dimensions.dims[0],dimensions.dims[1]);
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
   }
-  void onHover() {}
-  void onPress() {}
-  void onDrag(PVector mouse) {}
   void onRelease() {
     this.check();
   }
@@ -421,7 +447,7 @@ abstract class Slider extends Widget {
     stroke(0);
     rect(point.x, point.y, dimensions.dims[0],dimensions.dims[1]);
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
   }
   void onPress() {
@@ -479,38 +505,30 @@ class Label extends Widget {
   String name;
   int font_size = DEFAULT_TEXT_SIZE;
   int modifier = LEFT;
-  color textColor
+  //color textColor
   Label(String name, Point point) {
     super(point,null);
     this.name = name;
   }
-  
   void display() {
     textSize(font_size);
     textAlign(modifier);
     fill(0);
     text(name, point.x, point.y + font_size);
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return false;
   }
-  void onHover() {}
-  void onPress() {}
-  void onDrag(PVector mouse) {}
-  void onRelease() {}
 }
 /***********************************************************************************************/
 
 //class KeyboardWidget extends Widget {
 
 //}
-class Reset_TextBox implements Command {
+class Reset_TextBox extends AbstractCommand {
   TextBox target;
   Reset_TextBox(TextBox target) {
     this.target = target;
-  }
-  void queue() {
-    system.commands.add(this);
   }
   void execute() {
     target.text = "";
@@ -534,7 +552,7 @@ class TextBox extends Widget implements  Enter, Backspace {
   }
   void publish() {
     //do something
-    println(this.text);
+    println("User: " + this.text);
   }
   void display() {
     if(this.selected) {
@@ -547,16 +565,17 @@ class TextBox extends Widget implements  Enter, Backspace {
     fill(0);
     text(text, point.x, point.y + font_size);
   }
-  Boolean isTarget() {
+  boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
   }
   void onKeyDown(char c) {
     switch(c) {
-      case BACKSPACE: onBackspace();
+      case BACKSPACE: 
+      case DELETE: onBackspace();
         break;
-      case ENTER: onEnter();
-        break;
+      case ENTER:
       case RETURN: onEnter();
+        break;
       default: this.text += c;
     }
   }
@@ -569,7 +588,6 @@ class TextBox extends Widget implements  Enter, Backspace {
     //this.text += '\n';
   }
   void onBackspace() {
-    //this.text +="delete";
     if(this.text.length() > 0) this.text = this.text.substring(0, this.text.length() - 1);
   }
 }

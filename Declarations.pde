@@ -15,11 +15,12 @@ void baseDeclarations() {
   BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/4-1, 100);
 }
 
+/*
 ////////////////////////////////////////////////////////////////////////////////
 //TextBox declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-TextBox INPUT;
+
 
 void initialiseTextBoxDeclarations() {
   Point WORD_INPUT_TEXTBOX_POINT = new Point(width/2, height/2);
@@ -39,7 +40,7 @@ void initialiseTextBoxDeclarations() {
   //ACTION_BAR.add(newButton(new ChangeView(MAIN_MENU),"Main menu",color(255),TOP_ONE_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
   //ACTION_BAR.add(newButton(new ChangeView(FLIGHT_MENU),"Flight menu",color(255),TOP_TWO_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
 }
-
+*/
 
 
 
@@ -112,17 +113,13 @@ Point A_BIT_TO_THE_LEFT;// = new Point(-100, 0);
 Point A_BIT_TO_THE_RIGHT;
 Point A_BIT_UPWARDS;//  = new Point(0, -100);
 
+TextBox INPUT;
 
 /***********************************************
 Initialization function - cleaner here than in setup()
 ************************************************/
 
 void initialiseHackDroneDeclarations() {
-  //BACKGROUND_COLOR = color(255,255,255);
-  //COLORS.put("blue", color(0,200,180));
-  //COLORS.put("lightblue", color(0,132,180));
-  //COLORS.put("white", color(255,255,255));
-  //COLORS.put("green", color(0,255,0));
   
   OUTPUT_RANGE = 255;
   DEFAULT_TEXT_SIZE = 15;
@@ -172,14 +169,13 @@ void initialiseHackDroneDeclarations() {
   DEVELOPER_MENU.add(new Label("Enter word", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_LEFT)));
   INPUT = new TextBox(WORD_INPUT_TEXTBOX_POINT, WORD_INPUT_TEXTBOX_DIMENSIONS);
   DEVELOPER_MENU.add(INPUT);
-  DEVELOPER_MENU.add(newButton(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
-  
+  DEVELOPER_MENU.add(new Button(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
   
   ACTION_BAR = new View();
   system.action_bar = ACTION_BAR;
   system.active_view = MAIN_MENU;
-  ACTION_BAR.add(newButton(new ChangeView(CONFIGURE_MENU),"Configure menu",color(255,255,255),TOP_LEFT,BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(newButton(new ChangeView(MAIN_MENU),"Main menu",color(255),TOP_ONE_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(newButton(new ChangeView(FLIGHT_MENU),"Flight menu",color(255),TOP_TWO_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(newButton(new ChangeView(DEVELOPER_MENU),"DEVELOPER",color(255),TOP_THREE_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
+  ACTION_BAR.add(new Button(new ChangeView(CONFIGURE_MENU),"Configure menu",color(255,255,255),TOP_LEFT,BUTTON_DEFAULT_DIMENSIONS));
+  ACTION_BAR.add(new Button(new ChangeView(MAIN_MENU),"Main menu",color(255),TOP_ONE_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
+  ACTION_BAR.add(new Button(new ChangeView(FLIGHT_MENU),"Flight menu",color(255),TOP_TWO_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
+  ACTION_BAR.add(new Button(new ChangeView(DEVELOPER_MENU),"DEVELOPER",color(255),TOP_THREE_FOURTHS,BUTTON_DEFAULT_DIMENSIONS));
 }
