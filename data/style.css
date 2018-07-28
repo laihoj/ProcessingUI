@@ -1,0 +1,22 @@
+system {
+	frameRate: 120;
+	stroke: 255;
+	textSize: 24;
+}
+
+body {
+	background: white;
+	font-size: 15px;
+}
+
+.joystick {
+	inner-radius:100;
+}
+
+.button {
+	width: 33%;
+	height: 100;
+	color-hovering: blue;
+	color-base: lightblue;
+	color-pressed: white;
+}
