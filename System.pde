@@ -11,52 +11,7 @@ class System {
     action_bar = null;
   }
   
-  /*
-  Utilitarian:
-  Gets parsed to int system value from css style file of a certain name
-  */
-  int getInt(String name) {
-    try {
-      return Integer.parseInt(this.getProperty("system", name));
-    } catch (NumberFormatException e) {
-      println("Problem with Selector:Property system:" + name + ",  " + e);
-      exit();
-      return -1;
-    }
-  }
   
-  /*gets css value corresponding to a parametrised selector and property*/
-  String getProperty(String selector, String property) {
-    try {
-      return getSelector(selector).get(property);
-    } catch (NullPointerException e) {
-      println("Selector:Property " + selector + ":" + property + " was not found: " + e);
-      exit();
-      return "Error, please read console for more details";
-    }
-  }
-  
-  /*gets css block corresponding to a parametrised selector*/
-  HashMap<String, String> getSelector(String string) {
-    return getProperties().get(string);
-  }
-  
-  
-  /*Returns the datastructure of the css file read earlier*/
-  HashMap<String, HashMap<String, String>> getProperties() {
-    return css.properties;
-  }
-  
-  //String getProperty(String... selectors) throws NoSuchPropertyDefinedException {
-  //  return "";
-  //}
-  
-  CSS_File getCSS() {
-    return this.css;
-  }
-  void add(CSS_File css) {
-    this.css = css;
-  }
   void add(View view) {
     this.views.add(view);
   }
@@ -100,6 +55,53 @@ class System {
     this.display();
     this.execute();
   }
+  
+  
+  /*
+  Utilitarian:
+  Gets parsed to int system value from css style file of a certain name
+  */
+  int getInt(String name) {
+    try {
+      return Integer.parseInt(this.getProperty("system", name));
+    } catch (NumberFormatException e) {
+      println("Problem with Selector:Property system:" + name + ",  " + e);
+      exit();
+      return -1;
+    }
+  }
+  
+  
+  ////////////css stuff
+  /*gets css value corresponding to a parametrised selector and property*/
+  String getProperty(String selector, String property) {
+    try {
+      return getSelector(selector).get(property);
+    } catch (NullPointerException e) {
+      println("Selector:Property " + selector + ":" + property + " was not found: " + e);
+      exit();
+      return "Error, please read console for more details";
+    }
+  }
+  
+  /*gets css block corresponding to a parametrised selector*/
+  HashMap<String, String> getSelector(String string) {
+    return getProperties().get(string);
+  }
+  
+  
+  /*Returns the datastructure of the css file read earlier*/
+  HashMap<String, HashMap<String, String>> getProperties() {
+    return css.properties;
+  }
+  
+  CSS_File getCSS() {
+    return this.css;
+  }
+  void add(CSS_File css) {
+    this.css = css;
+  }
+  ///////////no more css stuff
 }
 
 /***********************************************************************************************/

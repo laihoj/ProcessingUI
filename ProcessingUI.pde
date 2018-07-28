@@ -1,4 +1,8 @@
-//Big problem: how to prevent clickable of overlapping invisible eg buttons
+/*
+//Solved(ish): Big problem: how to prevent clickable of overlapping invisible eg buttons
+//Listeners moved to Views instead of System.
+//It is still the responsibility of developer to not overlay (unless so intended) stuff on views
+*/
 
 System system;
 

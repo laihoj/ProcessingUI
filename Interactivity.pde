@@ -1,27 +1,105 @@
+/*
+Hereby 
+firstly an example as to how to create new event listener classes
+secondly the mouse listener class
+thirdly the keyboard listener class
+lastly the observer class
+*/
+
+
+
+//Example listener class, observer and widget implementations 
+/***********************************************************************************************/
+
+//The abstract event listener class is to be extended by our new example listener class
+/////////////////////////////////////////////////////////////////////////////////////////////////
+abstract class ExampleEventListener implements Listener {
+  ArrayList<ExampleObserver> observers = new ArrayList<ExampleObserver>();
+  void add(ExampleObserver observer) {
+    this.observers.add(observer);
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+//The widget class that extends our abstract observer class is to implement the method onExampleEvent, which is to be called upon when the newly to be created listener registers an event
+/////////////////////////////////////////////////////////////////////////////////////////////////
+interface ExampleActivities {
+  void onExampleEvent();
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+//The newly created example listener class extends the abstract example event listener class to get repetivite code, 
+//and implements the method listen, which upon hearing some specific event it listens to urges its observers to act accordingly
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class ExampleListener extends ExampleEventListener {
+  boolean evented = false;
+  ExampleListener() {}
+  void listen() {
+    if(evented) {
+      for(ExampleObserver observer: this.observers) {
+        observer.actAccordingly();
+      }
+    }
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/***********************************************************************************************/
+
+//The abstract observer responds as urged to by the listener, and is to be extended by our awesome example widget.
+//Of special note, currently one observer class is used for enacting all the urges described by listeners
+//***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
+abstract class ExampleObserver implements ExampleActivities {
+  void actAccordingly() {
+    this.onExampleEvent();
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Now the awesome widget needs to implement the method onExampleEvent to create awesome behaviour
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class Example_Awesome_Widget extends ExampleObserver {
+  void onExampleEvent() {
+    //An example: on clicking a navigation button, the current view might change
+    println("After the specific event happened, the widget did something particularly awesome");
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/***********************************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***********************************************************************************************/
 /////////////////////////////////////////////////////////////////////////////////////////////////
 interface Listener {
   void listen();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
-interface Selectable {
-  void select();
-  void deselect();
+abstract class EventListener implements Listener {
+  ArrayList<Observer> observers = new ArrayList<Observer>();
+  void add(Observer observer) {
+    this.observers.add(observer);
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
+/***********************************************************************************************/
 
 
-/*
-To add a new listener, 
-0. One should describe an interface to remind the implementor which events the observer should be able to handle 
-1. one must implement the event handlers (i.e. onKeyDown etc) for the object who's methods will be called by the observer
-2. one must define the set of cases in which the observer calls the object to handle events (i.e. keyDown, mousePress etc)
-3. The newly dubbed listener should be connected to system.listen()
-4. Profit
-*/
 
+/***********************************************************************************************/
 /////////////////////////////////////////////////////////////////////////////////////////////////
 interface MouseActivities {
   boolean isTarget();
@@ -33,41 +111,13 @@ interface MouseActivities {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
-interface KeyboardActivities {
-  void onKeyDown(char c);
-  void onKeyHold(char c);
-  void onKeyUp(char c);
-  boolean isSelected();
-}
-
-interface Spacebar {
-  void onSpacebar();
-}
-
-interface Enter {
-  void onEnter();
-}
-
-interface Backspace {
-  void onBackspace();
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-/***********************************************************************************************/
-class MouseListener implements Listener {
+class MouseListener extends EventListener {
   boolean wasMousePressed = false;
   PVector mousePos = new PVector(0,0);
   PVector prevMousePos = new PVector(0,0);
   PVector dragment = new PVector(0,0);
-  ArrayList<Observer> observers = new ArrayList<Observer>();
-  MouseListener() {
-  }
-  void add(Observer observer) {
-    this.observers.add(observer);
-  }
+  MouseListener() {}
   void listen() {
     for(Observer observer: this.observers) {
       observer.hover(this.mousePos);
@@ -99,13 +149,24 @@ class MouseListener implements Listener {
     this.wasMousePressed = mousePressed;
   }
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/
 
-/***********************************************************************************************/
 
-class KeyboardListener implements Listener {
+
+/***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
+interface KeyboardActivities {
+  void onKeyDown(char c);
+  void onKeyHold(char c);
+  void onKeyUp(char c);
+  boolean isSelected();
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class KeyboardListener extends EventListener {
   boolean wasKeyPressed = false;
-  ArrayList<Observer> observers = new ArrayList<Observer>();
   HashMap<Character, Boolean> keys = new HashMap<Character, Boolean>();
   ArrayList<Character> keysPressed;
   ArrayList<Character> keysReleased;
@@ -167,17 +228,17 @@ class KeyboardListener implements Listener {
     }
     return res + "\n" + res2 + "\n" + res3;
   }
-  void add(Observer observer) {
-    this.observers.add(observer);
-  }
+  
   void add(char[] cs) {
     for(char c: cs) {
       this.keys.put(c,false);
     }
   }
+  
   void add(char c) {
     this.keys.put(c,false);
   }
+  
   void updateKeyMap() {
     if(keyPressed) {
       for(char c: alphabet.toCharArray()) {
@@ -215,10 +276,28 @@ class KeyboardListener implements Listener {
     this.keysReleased.clear();
   }
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+//some handy keyboard related methods
+/////////////////////////////////////////////////////////////////////////////////////////////////
+interface Spacebar {
+  void onSpacebar();
+}
+
+interface Enter {
+  void onEnter();
+}
+
+interface Backspace {
+  void onBackspace();
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/
 
 
+
 /***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
 abstract class Observer implements MouseActivities, KeyboardActivities, Selectable {
   boolean pressed, hovering, selected;
   PVector pos = new PVector(0,0);
@@ -282,4 +361,5 @@ abstract class Observer implements MouseActivities, KeyboardActivities, Selectab
     this.selected = false;
   }
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/

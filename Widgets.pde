@@ -1,3 +1,4 @@
+//Point is PVector reinvented. Investigate ramifications if should extend PVector
 /***********************************************************************************************/
 class Point {
   int x, y;
@@ -42,6 +43,9 @@ class Dimensions {
   Dimensions(int... dims) {
     this.dims = dims;
   }
+  Dimensions(Dimensions dimensions) {
+    this.dims = dimensions.dims;
+  }
 }
 /***********************************************************************************************/
 
@@ -54,7 +58,7 @@ class View {
   MouseListener mouseListener;
   KeyboardListener keyboardListener;
   View() {
-    this("ANON_VIEW");
+    this("ANONYMOUS_VIEW");
   }
   View(String name) {
     mouseListener = new MouseListener();
@@ -112,13 +116,14 @@ The way I've thought it out summer 2018 is that every visible UI element should 
 The observer class makes sure that widgets can be given any functionality on human interaction, much similarly to html and javascript.
 Feel free to implement the on[Event] methods in extending classes to achieve functionality.
 */
+/*
+When extending the widget class to new widgets, in case of the constructor, start with the point.
+*/
 /////////////////////////////////////////////////////////////////////////////////////////////////
 abstract class Widget extends Observer implements Displayable {
   Point point;
   Dimensions dimensions;
   Widget(Point point, Dimensions dimensions) {
-    //system.mouseListener.add(this);
-    //system.keyboardListener.add(this);
     this.point = point;
     this.dimensions = dimensions;
   }
@@ -217,20 +222,16 @@ class Button extends Widget implements Command {
   void execute() {
     this.command.execute();
   }
+  //unlike normal commands (which extend AbstractCommand {button extends widget}), queue needs to be implemented
   void queue() {
     system.commands.add(this);
   }
-  void onHover() {}
-  void onPress() {}
-  void onDrag(PVector mouse) {}
-  void onRelease() {
-    
+  void onRelease() {  
     if(this.attributes != null) {
       this.attributes.onRelease.queue();
     } else {
       this.queue();
     }
-    
   }
 }
 /***********************************************************************************************/
@@ -277,18 +278,11 @@ class Rotator extends Widget {
   void onDrag(PVector drag) {
     this.heading += PVector.sub(new PVector(mouseX,mouseY),this.point.toPVector()).heading() - PVector.sub(new PVector(pmouseX,pmouseY),this.point.toPVector()).heading();
   }
-  void onRelease() {}
-  //String toString() {
-  //  String res = "";
-  //  res += (int)OUTPUT_RANGE - floor(-(min(max(point.y - stick.y,-getRadius()),getRadius()) / (float)getRadius() * OUTPUT_RANGE/2.0) + OUTPUT_RANGE/2);
-  //  res += ",";
-  //  res += floor(-(min(max(point.x - stick.x,-getRadius()),getRadius())  / (float)getRadius() * OUTPUT_RANGE/2.0) + OUTPUT_RANGE/2);
-  //  return res;
-  //}
   String toString() {
     return ""+heading;
   }
 }
+/***********************************************************************************************/
 
 
 //The dimensions.dim[1] refers to the diameter of the outer circle, [0] is the inner circle  
@@ -506,7 +500,7 @@ class Label extends Widget {
   int font_size = DEFAULT_TEXT_SIZE;
   int modifier = LEFT;
   //color textColor
-  Label(String name, Point point) {
+  Label(Point point, String name) {
     super(point,null);
     this.name = name;
   }
@@ -522,21 +516,21 @@ class Label extends Widget {
 }
 /***********************************************************************************************/
 
-//class KeyboardWidget extends Widget {
 
-//}
+
+/***********************************************************************************************/
 class Reset_TextBox extends AbstractCommand {
   TextBox target;
   Reset_TextBox(TextBox target) {
     this.target = target;
   }
   void execute() {
-    target.text = "";
+    target.reset();
   }
 }
 
 /*use this for getting typed input*/
-class TextBox extends Widget implements  Enter, Backspace {
+class TextBox extends Widget implements Enter, Backspace {
   String text;
   int font_size = DEFAULT_TEXT_SIZE;
   int modifier = LEFT;
@@ -591,3 +585,4 @@ class TextBox extends Widget implements  Enter, Backspace {
     if(this.text.length() > 0) this.text = this.text.substring(0, this.text.length() - 1);
   }
 }
+/***********************************************************************************************/
