@@ -602,15 +602,9 @@ class TextBox extends Widget implements Enter, Backspace {
 }
 /***********************************************************************************************/
 
-abstract class Ellipse_Widget extends Widget {
-  Ellipse_Widget(Point point, Dimensions dimensions) {
-    super(point, dimensions);
-  }
-  boolean isTarget() {
-    return isTargetEllipse(this.point, this.dimensions);
-  }
-}
 
+
+//HERE IS THE AWESOME BALL GAME WHICH DEMONSTRATES INTERACTION BY BOTH MOUSE AND KEYBOARD
 /***********************************************************************************************/
 /////////////////////////////////////////////////////////////////////////////////////////////////
 PVector LEFTWARDS = new PVector(-0.35,0);
@@ -628,50 +622,67 @@ class Ball extends Ellipse_Widget {
     this.selected = true;
   }
   void display() {
+    /*Physics*/
     this.point.add(vel);
-    //drag resistance
     this.vel.mult(0.93);
+    /*Rules*/
+    if(this.outOfBounds()) {
+      this.reset();
+    }
+    /*Styling*/
     fill(255,0,0);
     noStroke();
-    smooth();
-    if(this.selected) {
-      fill(0,0,255);
-    }
     if(this.hovering) {
-      fill(255,100,100);
+      fill(255,200,200);
     }
+    /*Draw*/
     ellipse(this.point, this.dimensions);
   }
-  void setVel(PVector vel) {
-    this.vel = vel;
+  
+  //override release() to stop ball from being deselected
+  void release(PVector mouse, PVector dragment) {}
+  
+  //rules
+  ////////////
+  boolean outOfBounds() {
+    return this.point.x < 0 ||
+           this.point.x > width ||
+           this.point.y < 0 ||
+           this.point.y > height;
+  }
+  
+  //utilitarian
+  ////////////
+  void reset() {
+    this.vel.mult(0);
+    this.point.x = width/2;
+    this.point.y = height/2;
   }
   void push(PVector force) {
     vel.add(force);
   }
-  void onKeyDown(char c) {
-    processKey(c);
-    println(c);
-  }
-  void onKeyHold(char c) {
-    processKey(c);
-  }
+  //case up down left right dont seem to work
   void processKey(char c) {
     switch(c) {
-      case UP:
       case 'w': this.push(UPWARDS);
         break;
-      case LEFT:
       case 'a': this.push(LEFTWARDS);
         break;
-      case DOWN:
       case 's': this.push(DOWNWARDS);
         break;
-      case RIGHT:
       case 'd': this.push(RIGHTWARDS);
         break;
     }
   }
-  void release(PVector mouse, PVector dragment) {}
+  
+  //interaction
+  ////////////
+  void onDrag(PVector drag) {
+    this.point.sub(drag);
+  }
+  void onKeyHold(char c) {
+    processKey(c);
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/
