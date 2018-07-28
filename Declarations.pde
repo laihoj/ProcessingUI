@@ -77,16 +77,20 @@ import ketai.net.*;
 Global constants
 ************************************************/
 
+//what is the point, you might ask? Havent landed upon a nice floating container solution yet.
 Point       TOP_LEFT;
 
+Point[]     TOP_THIRDS;
+Point[]     TOP_FOURTHS;
 Point[]     TOP_FIFTHS;
 
-Point       TOP_ONE_THIRDS,
-            TOP_TWO_THIRDS;
 
-Point       TOP_ONE_FOURTHS,
-            TOP_TWO_FOURTHS,
-            TOP_THREE_FOURTHS;
+//Point       TOP_ONE_THIRDS,
+//            TOP_TWO_THIRDS;
+
+//Point       TOP_ONE_FOURTHS,
+//            TOP_TWO_FOURTHS,
+//            TOP_THREE_FOURTHS;
 
 View        ACTION_BAR,
             MAIN_MENU,
@@ -133,14 +137,16 @@ void initialiseHackDroneDeclarations() {
   //DEFAULT_TEXT_SIZE = 15;
   TOP_LEFT = new Point(0,0);
   
-  TOP_ONE_THIRDS = new Point(width/3,0);
-  TOP_TWO_THIRDS = new Point(width*2/3,0);
+  //TOP_ONE_THIRDS = new Point(width/3,0);
+  //TOP_TWO_THIRDS = new Point(width*2/3,0);
   
-  TOP_ONE_FOURTHS = new Point(width/4,0);
-  TOP_TWO_FOURTHS = new Point(width*2/4,0);
-  TOP_THREE_FOURTHS = new Point(width*3/4,0);
+  //TOP_ONE_FOURTHS = new Point(width/4,0);
+  //TOP_TWO_FOURTHS = new Point(width*2/4,0);
+  //TOP_THREE_FOURTHS = new Point(width*3/4,0);
   
-  TOP_FIFTHS = new Point[] {new Point(TOP_LEFT),new Point(width/5,0),new Point(width*2/5,0),new Point(width*3/5,0),new Point(width*4/5,0)};
+  TOP_THIRDS  = new Point[] {new Point(TOP_LEFT),new Point(width/3,0),new Point(width*2/3,0)};
+  TOP_FOURTHS = new Point[] {new Point(TOP_LEFT),new Point(width/4,0),new Point(width*2/4,0),new Point(width*3/4,0)};
+  TOP_FIFTHS  = new Point[] {new Point(TOP_LEFT),new Point(width/5,0),new Point(width*2/5,0),new Point(width*3/5,0),new Point(width*4/5,0)};
   
   A_BIT_TO_THE_LEFT = new Point(-100, 0);
   A_BIT_TO_THE_RIGHT  = new Point(100, 0);
@@ -184,6 +190,7 @@ void initialiseHackDroneDeclarations() {
   DEVELOPER_MENU.add(new Button(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
   
   BALL_GAME = new View("Ball game view");
+  BALL_GAME.add(new Ball(new Point(width/2, height/2), new Dimensions(30)));
   
   ACTION_BAR = new View();
   system.action_bar = ACTION_BAR;

@@ -183,6 +183,10 @@ class KeyboardListener extends EventListener {
     this.alphabet += RETURN;
     this.alphabet += TAB;
     this.alphabet += ESC;
+    this.alphabet += DOWN;
+    this.alphabet += UP;
+    this.alphabet += RIGHT;
+    this.alphabet += LEFT;
     keysPressed = new ArrayList<Character>();
     keysReleased = new ArrayList<Character>();
   }
@@ -240,20 +244,7 @@ class KeyboardListener extends EventListener {
   }
   
   void updateKeyMap() {
-    if(keyPressed) {
-      for(char c: alphabet.toCharArray()) {
-        if(key==c) {
-          if(!keys.get(c)) {
-            this.keysPressed.add(c);
-          }
-          this.keys.put(c, true);
-          //if a key is not pressed but it was pressed earlier, then it is released
-        } else if(keys.get(c)) {
-          this.keysReleased.add(c);
-          this.keys.put(c, false);
-        }
-      }
-    } else {
+    if(!keyPressed) {
       for(char c: alphabet.toCharArray()) {
         this.keys.put(c, false);
       }
@@ -274,6 +265,32 @@ class KeyboardListener extends EventListener {
       }
     }
     this.keysReleased.clear();
+    for(char c: this.keys.keySet()) {
+      for(Observer observer: this.observers) {
+        if(keys.get(c)) {
+          observer.hold(c);
+        }
+      }
+    }
+  }
+}
+/*Because there is no boolean keyReleased like there is keyPressed, in order to keep things consistent, lets utilise these functions*/
+void keyPressed() {
+  KeyboardListener listener = system.active_view.keyboardListener;
+  for(char c: listener.keys.keySet()) {
+    if(key==c) {
+      if(!listener.keys.get(c)) {listener.keysPressed.add(c);}
+      listener.keys.put(c,true);
+    }
+  }
+}
+void keyReleased() {
+  KeyboardListener listener = system.active_view.keyboardListener;
+  for(char c: listener.keys.keySet()) {
+    if(key==c) {
+      listener.keys.put(c,false);
+      listener.keysReleased.add(c);
+    }
   }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////

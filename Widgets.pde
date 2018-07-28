@@ -1,17 +1,28 @@
 //Point is PVector reinvented. Investigate ramifications if should extend PVector
 /***********************************************************************************************/
 class Point {
-  int x, y;
+  float x, y;
   Point(Point point) {
     this.x = point.x;
     this.y = point.y;
+  }
+  Point(float x, float y) {
+    this.x = x;
+    this.y = y;
   }
   Point(int x, int y) {
     this.x = x;
     this.y = y;
   }
   Point add(Point that) {
-    return new Point(this.x + that.x, this.y + that.y);
+    this.x += that.x;
+    this.y += that.y;
+    return this;
+  }
+  Point add(PVector that) {
+    this.x += that.x;
+    this.y += that.y;
+    return this;
   }
   void sub(Point that) {
     this.x -= that.x;
@@ -259,7 +270,8 @@ class Rotator extends Widget {
    stroke(0);
    noFill();
    point(point.x,point.y);
-   ellipse(point.x,point.y,getDiameter(),getDiameter());
+   //ellipse(point.x,point.y,getDiameter(),getDiameter());
+   ellipse(this.point, this.dimensions);
    fill(0);
    //line(point.x, point.y, point.x + this.getRadius() * cos(heading), point.y + this.getRadius() * sin(heading));
    pushMatrix();
@@ -429,6 +441,9 @@ abstract class Slider extends Widget {
   
   float getValue() {return -1;}
   
+  void setHeight(float Height) {setHeight(Height);}
+  void setWidth(float Width) {setWidth(Width);}
+  
   void setHeight(int Height) {
     this.dimensions.dims[2] = (int)limit(Height,0,dimensions.dims[1]);
   }
@@ -585,4 +600,78 @@ class TextBox extends Widget implements Enter, Backspace {
     if(this.text.length() > 0) this.text = this.text.substring(0, this.text.length() - 1);
   }
 }
+/***********************************************************************************************/
+
+abstract class Ellipse_Widget extends Widget {
+  Ellipse_Widget(Point point, Dimensions dimensions) {
+    super(point, dimensions);
+  }
+  boolean isTarget() {
+    return isTargetEllipse(this.point, this.dimensions);
+  }
+}
+
+/***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
+PVector LEFTWARDS = new PVector(-0.35,0);
+PVector RIGHTWARDS = new PVector(0.35,0);
+PVector UPWARDS = new PVector(0,-0.35);
+PVector DOWNWARDS = new PVector(0,0.35);
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class Ball extends Ellipse_Widget {
+  PVector vel;
+  Ball(Point point, Dimensions dimensions) {
+    super(point, dimensions);
+    vel = new PVector();
+    this.selected = true;
+  }
+  void display() {
+    this.point.add(vel);
+    //drag resistance
+    this.vel.mult(0.93);
+    fill(255,0,0);
+    noStroke();
+    smooth();
+    if(this.selected) {
+      fill(0,0,255);
+    }
+    if(this.hovering) {
+      fill(255,100,100);
+    }
+    ellipse(this.point, this.dimensions);
+  }
+  void setVel(PVector vel) {
+    this.vel = vel;
+  }
+  void push(PVector force) {
+    vel.add(force);
+  }
+  void onKeyDown(char c) {
+    processKey(c);
+    println(c);
+  }
+  void onKeyHold(char c) {
+    processKey(c);
+  }
+  void processKey(char c) {
+    switch(c) {
+      case UP:
+      case 'w': this.push(UPWARDS);
+        break;
+      case LEFT:
+      case 'a': this.push(LEFTWARDS);
+        break;
+      case DOWN:
+      case 's': this.push(DOWNWARDS);
+        break;
+      case RIGHT:
+      case 'd': this.push(RIGHTWARDS);
+        break;
+    }
+  }
+  void release(PVector mouse, PVector dragment) {}
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/

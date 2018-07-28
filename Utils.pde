@@ -22,7 +22,9 @@ boolean isTargetEllipse(Point point, Dimensions dimensions) {
   return dimensions.dims[0] / 2 > sqrt((float)(Math.pow(point.x - mouseX,2) + Math.pow(point.y - mouseY,2)));
 }
 
-
+void ellipse(Point point, Dimensions dimensions) {
+  ellipse(point.x, point.y, dimensions.dims[0],dimensions.dims[0]);
+}
 
 
 
