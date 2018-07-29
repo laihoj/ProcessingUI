@@ -29,7 +29,7 @@ void ellipse(Point point, Dimensions dimensions) {
 
 abstract class Ellipse_Widget extends Widget {
   Ellipse_Widget(Point point, Dimensions dimensions) {
-    super(point, dimensions);
+    super(new Point(point), new Dimensions(dimensions));
   }
   boolean isTarget() {
     return isTargetEllipse(this.point, this.dimensions);

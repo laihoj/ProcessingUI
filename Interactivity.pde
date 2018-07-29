@@ -103,11 +103,12 @@ abstract class EventListener implements Listener {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 interface MouseActivities {
   boolean isTarget();
-  void onHover();
-  void onHoverOver();
-  void onPress();
-  void onDrag(PVector mouse);
-  void onRelease();
+  void onMouseHover();
+  void onMouseHoverOver();
+  void onMousePress();
+  void onMouseHold();
+  void onMouseDrag(PVector mouse);
+  void onMouseRelease();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +121,7 @@ class MouseListener extends EventListener {
   MouseListener() {}
   void listen() {
     for(Observer observer: this.observers) {
-      observer.hover(this.mousePos);
+      observer.hoverMouse(this.mousePos);
     }
     if(mousePressed) {
       this.mousePos = new PVector(mouseX,mouseY);
@@ -129,19 +130,23 @@ class MouseListener extends EventListener {
         this.dragment.setMag(0);
         this.prevMousePos = new PVector(mouseX,mouseY);
         for(Observer observer: this.observers) {
-          observer.press(this.mousePos);
+          observer.pressMouse(this.mousePos);
+        }
+      } else {
+        for(Observer observer: this.observers) {
+          observer.holdMouse();
         }
       }
       if(this.mousePos != this.prevMousePos) {
         this.dragment = PVector.sub(this.prevMousePos,this.mousePos);
         for(Observer observer: this.observers) {
-          observer.drag(this.dragment);
+          observer.dragMouse(this.dragment);
         }
       }
     }
     if(wasMousePressed && !mousePressed) {
       for(Observer observer: this.observers) {
-        observer.release(mousePos, dragment);
+        observer.releaseMouse(mousePos, dragment);
       }
     }
     
@@ -255,20 +260,20 @@ class KeyboardListener extends EventListener {
     updateKeyMap();
     for(char c: this.keysPressed) {
       for(Observer observer: this.observers) {
-        observer.press(c);
+        observer.pressKey(c);
       }
     }
     this.keysPressed.clear();
     for(char c: this.keysReleased) {
       for(Observer observer: this.observers) {
-        observer.release(c);
+        observer.releaseKey(c);
       }
     }
     this.keysReleased.clear();
     for(char c: this.keys.keySet()) {
       for(Observer observer: this.observers) {
         if(keys.get(c)) {
-          observer.hold(c);
+          observer.holdKey(c);
         }
       }
     }
@@ -321,50 +326,60 @@ abstract class Observer implements MouseActivities, KeyboardActivities, Selectab
   String key;
 
   /*Mouse stuff*/
-  void hover(PVector mouse) {
+  void hoverMouse(PVector mouse) {
     if(this.isTarget()) {
       this.hovering = true;
-      this.onHover();
+      this.onMouseHover();
     } else {
       if(this.hovering) {
-        this.onHoverOver();
+        this.onMouseHoverOver();
       }
       this.hovering = false;
     }
   }
-  void press(PVector mouse) {
+  void pressMouse(PVector mouse) {
     if(this.isTarget()) {
       this.pressed = true;
-      this.onPress();
+      
+    }
+    if(this.isSelected()) {
+      this.onMousePress();
     }
   }
-  void drag(PVector mouse) {
+  void dragMouse(PVector mouse) {
     if(this.pressed && PVector.dist(new PVector(pmouseX, pmouseY), new PVector(mouseX, mouseY)) > 0) {
-      this.onDrag(mouse);
+      this.onMouseDrag(mouse);
     }
   }
-  void release(PVector mouse, PVector dragment) {
-    if(this.pressed && this.isTarget()) {
-      this.onRelease();
+  void holdMouse() {
+    if(this.isSelected()) {
+      this.onMouseHold();
     }
+  }
+  void releaseMouse(PVector mouse, PVector dragment) {
     if(!this.isTarget() && this.selected) {
       this.deselect();
     }
+    if(this.pressed && this.isTarget()) {
+      this.onMouseRelease();
+      this.select();
+    }
+    
     this.pressed = false;    
   }
 
   /*Keyboard stuff*/
-  void press(char c) {
+  void pressKey(char c) {
     if(this.isSelected()) {
       this.onKeyDown(c);
     }
   }
-  void hold(char c) {
+  void holdKey(char c) {
     if(this.isSelected()) {
       this.onKeyHold(c);
     }
   }
-  void release(char c) {
+  void releaseKey(char c) {
     if(this.isSelected()) {
       this.onKeyUp(c);
     }

@@ -13,6 +13,7 @@ void baseDeclarations() {
   COLORS.put("green", color(0,255,0));
   DEFAULT_TEXT_SIZE = 15;
   BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/6-1, 100);
+  FULL_SCREEN = new Dimensions(width,height);
 }
 
 /*
@@ -93,8 +94,9 @@ Point[]     TOP_SIXTHS;
 //            TOP_TWO_FOURTHS,
 //            TOP_THREE_FOURTHS;
 
-View        ACTION_BAR,
-            MAIN_MENU,
+Container   ACTION_BAR;
+
+View        MAIN_MENU,
             CONFIGURE_MENU,
             FLIGHT_MENU,
             DEVELOPER_MENU,
@@ -102,7 +104,8 @@ View        ACTION_BAR,
             WORD_TRAINER;
             
 Dimensions  BUTTON_DEFAULT_DIMENSIONS,
-            SLIDER_DEFAULT_DIMENSIONS;
+            SLIDER_DEFAULT_DIMENSIONS,
+            FULL_SCREEN;
             
 Dimensions  JOYSTICK_DEFAULT_DIMS;
 int         JOYSTICK_DEFAULT_RADIUS;
@@ -200,14 +203,22 @@ void initialiseHackDroneDeclarations() {
   //WORD_TRAINER.add(new Button(new Point(width*2/3, height/2), new Dimensions(100,25)));
   WORD_TRAINER.add(new TextBox(new Point(width*2/3, height/2).add(A_BIT_TO_THE_RIGHT), new Dimensions(100,25)));
   
-  ACTION_BAR = new View();
+  ACTION_BAR = new Container(new Dimensions(width, 50));
+  //ACTION_BAR = new Container();
   system.action_bar = ACTION_BAR;
   system.active_view = MAIN_MENU;
   //Adding new navigation button needs to adjust BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/6-1, 100); in baseDeclarations to the correct array length
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[0], CONFIGURE_MENU));
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[1], MAIN_MENU));
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[2], FLIGHT_MENU));
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[3], DEVELOPER_MENU));
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[4], BALL_GAME));
-  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[5], WORD_TRAINER));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[0], CONFIGURE_MENU));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[1], MAIN_MENU));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[2], FLIGHT_MENU));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[3], DEVELOPER_MENU));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[4], BALL_GAME));
+  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[5], WORD_TRAINER));
+  
+  ACTION_BAR.add(new Navigation_Button(CONFIGURE_MENU));
+  ACTION_BAR.add(new Navigation_Button(MAIN_MENU));
+  ACTION_BAR.add(new Navigation_Button(FLIGHT_MENU));
+  ACTION_BAR.add(new Navigation_Button(DEVELOPER_MENU));
+  ACTION_BAR.add(new Navigation_Button(BALL_GAME));
+  ACTION_BAR.add(new Navigation_Button(WORD_TRAINER));
 }

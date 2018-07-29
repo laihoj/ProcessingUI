@@ -3,7 +3,7 @@ class System {
   ArrayList<View> views;
   ArrayList<Command> commands;
   View active_view;
-  View action_bar;
+  Container action_bar;
   System() {
     views = new ArrayList<View>();
     commands = new ArrayList<Command>();
