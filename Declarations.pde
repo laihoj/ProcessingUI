@@ -172,6 +172,13 @@ void initialiseHackDroneDeclarations() {
   //MAIN_MENU.add(mainSlider);
   CONFIGURE_MENU = new View("Configuration view");
   CONFIGURE_MENU.add(new Label(new Point(width/2, BUTTON_DEFAULT_DIMENSIONS.dims[1] + 10), "Configuration"));
+  CSS_Slider redSlider =   new CSS_Slider(new Point(width/3, height/2),      new Dimensions(100,20,0), 255, "body", "background-red");
+  CSS_Slider greenSlider = new CSS_Slider(new Point(width/3, height/2 + 22), new Dimensions(100,20,0), 255, "body", "background-green");
+  CSS_Slider blueSlider  = new CSS_Slider(new Point(width/3, height/2 + 44), new Dimensions(100,20,0), 255, "body", "background-blue");
+  CONFIGURE_MENU.add(redSlider);
+  CONFIGURE_MENU.add(greenSlider);
+  CONFIGURE_MENU.add(blueSlider);
+  CONFIGURE_MENU.add(new Button(new Save_Configurations(redSlider, greenSlider, blueSlider), "save", color(255), new Point(width/3, height/2 - 22), new Dimensions(100,20,0)));
   //CONFIGURE_MENU.add(newButton(new Discover(),"Discover",color(255,255,255),new Point(0,height/4),BUTTON_DEFAULT_DIMENSIONS));
   //CONFIGURE_MENU.add(newButton(new MakeDiscoverable(),"Make Discoverable",color(255,255,255),new Point(0,height*1/2),BUTTON_DEFAULT_DIMENSIONS));
   //CONFIGURE_MENU.add(newButton(new Connect(),"Connect",color(255,255,255),new Point(0,height*3/4),BUTTON_DEFAULT_DIMENSIONS));
@@ -183,20 +190,27 @@ void initialiseHackDroneDeclarations() {
   rightStick.setResting(new Point(rightStick.point)).rest();
   FLIGHT_MENU.add(leftStick);
   FLIGHT_MENU.add(rightStick);
-  DEVELOPER_MENU = new View("Developer menu view");
-  DEVELOPER_MENU.add(new Vertical_Slider  (new Point(width/3, height/2),           new Dimensions(100,400,0)));
-  DEVELOPER_MENU.add(new Horizontal_Slider(new Point(width*2/3, height*2/3),       new Dimensions(400,100,0)));
-  DEVELOPER_MENU.add(new Rotator          (new Point(width*3/4,height/4),          new Dimensions(300)));
-  DEVELOPER_MENU.add(new CheckBox         (new Point(width/2 - 100, height - 100), new Dimensions(50,50)));
-  DEVELOPER_MENU.add(new CheckBox         (new Point(width/2, height - 100),       new Dimensions(50,50)));
-  DEVELOPER_MENU.add(new Label            (new Point(WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_LEFT)), new String("Enter word")));
+  DEVELOPER_MENU = new View("Developer menu view")
+              .add(new Vertical_Slider  (new Point(width/3, height/2),           new Dimensions(100,400,0)))
+              .add(new Horizontal_Slider(new Point(width*2/3, height*2/3),       new Dimensions(400,100,0)))
+              .add(new Rotator          (new Point(width*3/4,height/4),          new Dimensions(300)))
+              .add(new CheckBox         (new Point(width/2 - 100, height - 100), new Dimensions(50,50)))
+              .add(new CheckBox         (new Point(width/2, height - 100),       new Dimensions(50,50)))
+              .add(new Label            (new Point(WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_LEFT)), new String("Enter word")));
   
   INPUT = new TextBox(new Point(WORD_INPUT_TEXTBOX_POINT), new Dimensions(WORD_INPUT_TEXTBOX_DIMENSIONS));
   DEVELOPER_MENU.add(INPUT);
   DEVELOPER_MENU.add(new Button(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
   
-  BALL_GAME = new View("Ball game view");
-  BALL_GAME.add(new Shooter(new Point(width/2, height/2), new Dimensions(30)));
+  BALL_GAME = new View("Ball game");
+  Shooter shooter = new Shooter(new Point(width/2, height/2), new Dimensions(30));
+  BALL_GAME.add(shooter);
+  Container weapons_toolbar = new Container(new Point(0, height - 100), new Dimensions(width, 100));
+  weapons_toolbar.add(new Button(new Switch_Weapon(shooter, shooter.machineGun),  "Machine gun",color(255),  new Point(width/2, height/2), BUTTON_DEFAULT_DIMENSIONS))
+                 .add(new Button(new Switch_Weapon(shooter, shooter.sniperRifle), "Sniper rifle",color(255), new Point(width/2, height/2), BUTTON_DEFAULT_DIMENSIONS))
+                 .add(new Button(new Switch_Weapon(shooter, shooter.pistol),      "Pistol",color(255),       new Point(width/2, height/2), BUTTON_DEFAULT_DIMENSIONS))
+                 .add(new Button(new Switch_Weapon(shooter, shooter.shotgun),     "Shotgun",color(255),      new Point(width/2, height/2), BUTTON_DEFAULT_DIMENSIONS));
+  BALL_GAME.add(weapons_toolbar);
   
   WORD_TRAINER = new View("Word trainer");
   WORD_TRAINER.add(new Rotator(new Point(width/3, height/2), new Dimensions(300)));
@@ -207,18 +221,11 @@ void initialiseHackDroneDeclarations() {
   //ACTION_BAR = new Container();
   system.action_bar = ACTION_BAR;
   system.active_view = MAIN_MENU;
-  //Adding new navigation button needs to adjust BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/6-1, 100); in baseDeclarations to the correct array length
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[0], CONFIGURE_MENU));
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[1], MAIN_MENU));
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[2], FLIGHT_MENU));
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[3], DEVELOPER_MENU));
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[4], BALL_GAME));
-  //ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[5], WORD_TRAINER));
   
-  ACTION_BAR.add(new Navigation_Button(CONFIGURE_MENU));
-  ACTION_BAR.add(new Navigation_Button(MAIN_MENU));
-  ACTION_BAR.add(new Navigation_Button(FLIGHT_MENU));
-  ACTION_BAR.add(new Navigation_Button(DEVELOPER_MENU));
-  ACTION_BAR.add(new Navigation_Button(BALL_GAME));
-  ACTION_BAR.add(new Navigation_Button(WORD_TRAINER));
+  ACTION_BAR.add(new Navigation_Button(CONFIGURE_MENU))
+            .add(new Navigation_Button(MAIN_MENU))
+            .add(new Navigation_Button(FLIGHT_MENU))
+            .add(new Navigation_Button(DEVELOPER_MENU))
+            .add(new Navigation_Button(BALL_GAME))
+            .add(new Navigation_Button(WORD_TRAINER));
 }

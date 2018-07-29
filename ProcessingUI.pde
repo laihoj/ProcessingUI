@@ -9,7 +9,9 @@ System system;
 void setup() {
   system = new System();
   system.add(new CSS_File("style.css"));
-
+  //system.css.put("body","background","green");
+  //system.css.save();
+  println(system.css.toString());
   fullScreen();
   
   frameRate(system.getInt("frameRate"));
@@ -20,7 +22,10 @@ void setup() {
 }
 
 void draw() {
-  background(colorify(system.getProperty("body","background")));
+  //background(colorify(system.getProperty("body","background")));
+  background(Integer.valueOf(system.getProperty("body","background-red"))
+            ,Integer.valueOf(system.getProperty("body","background-green"))
+            ,Integer.valueOf(system.getProperty("body","background-blue")));
   system.next();
   //system.keyboardListener.display();
 }

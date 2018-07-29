@@ -36,7 +36,30 @@ abstract class Ellipse_Widget extends Widget {
   }
 }
 
+class Save_Configurations extends AbstractCommand {
+  CSS_Slider[] css_widgets;
+  Save_Configurations(CSS_Slider... widgets) {
+    this.css_widgets = widgets;
+  }
+  void execute() {
+    for(CSS_Slider widget: this.css_widgets) {
+      system.css.put(widget.getSelector(),widget.getProperty(),""+(int)Math.floor(widget.getValue()));
+    }
+    system.css.save();
+  }
+}
 
+class Switch_Weapon extends AbstractCommand {
+  Shooter shooter;
+  Shooter.Gun gun;
+  Switch_Weapon(Shooter shooter, Shooter.Gun gun) {
+    this.shooter = shooter;
+    this.gun = gun;
+  }
+  void execute() {
+    this.shooter.gun = gun;
+  }
+}
 
 
 /*********

@@ -364,7 +364,6 @@ abstract class Observer implements MouseActivities, KeyboardActivities, Selectab
       this.onMouseRelease();
       this.select();
     }
-    
     this.pressed = false;    
   }
 

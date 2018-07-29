@@ -28,8 +28,10 @@ HashMap<String,HashMap<String,String>> readCSS(String filename) {
 }
 
 class CSS_File {
+  String filename;
   HashMap<String,HashMap<String,String>> properties; 
   CSS_File(String filename) {
+    this.filename = filename;
     properties = null;
     try {
       properties = readCSS(filename);
@@ -38,16 +40,23 @@ class CSS_File {
       println("failed to read css");
     }
   }
+  //fix up toString, currently it should be called print instead of toString
   String toString() {
     String res = "";
     for(String k: this.properties.keySet()) {
-      println(k+"{");
+      res += k+"{\n";
       for(String propertyKey: properties.get(k).keySet()) {
-        println(propertyKey+":"+this.properties.get(k).get(propertyKey)+";");
+        res += propertyKey+":"+this.properties.get(k).get(propertyKey)+";\n";
       }
-      println("}");
+      res += "}\n";
     }
     return res;
+  }
+  void put(String selector, String property, String value) {
+    this.properties.get(selector).put(property,value);
+  }
+  void save() {
+    saveStrings("data/" + filename,split(this.toString(),'\n'));
   }
 }
 

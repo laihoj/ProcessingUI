@@ -64,6 +64,7 @@ class Dimensions {
 /***********************************************************************************************/
 class View {
   String name;
+  ArrayList<Container> containers = new ArrayList<Container>();
   ArrayList<Button> buttons = new ArrayList<Button>();
   ArrayList<Widget> widgets = new ArrayList<Widget>();
   MouseListener mouseListener;
@@ -80,15 +81,21 @@ class View {
   String toString() {
     return this.name;
   }
-  void add(Button button) {
+  View add(Button button) {
     this.buttons.add(button);
     this.mouseListener.add(button);
     this.keyboardListener.add(button);
+    return this;
   }
-  void add(Widget widget) {
+  View add(Widget widget) {
     this.widgets.add(widget);
     this.mouseListener.add(widget);
     this.keyboardListener.add(widget);
+    return this;
+  }
+  Container add(Container container) {
+    this.containers.add(container);
+    return container;
   }
   void remove(Button button) {
     this.buttons.remove(button);
@@ -97,6 +104,9 @@ class View {
     this.widgets.remove(widget);
   }
   void display() {
+    for(Container container: this.containers) {
+      container.display();
+    }
     for(Button button: this.buttons) {
       button.display();
     }
@@ -109,6 +119,9 @@ class View {
   void listen() {
     this.mouseListener.listen();
     this.keyboardListener.listen();
+    for(Container container: this.containers) {
+      container.listen();
+    }
   }
 }
 
@@ -121,21 +134,29 @@ class Container extends View {
   Container(Dimensions dimensions) {
     this(new Point(TOP_LEFT), dimensions, "ANONYMOUS CONTAINER");
   }
+  Container(Point point, Dimensions dimensions) {
+    this(point, dimensions, "ANONYMOUS CONTAINER");
+  }
   Container(Point point, Dimensions dimensions, String name) {
     this.name = name;
     this.point = point;
     this.dimensions = dimensions;
   }
-  void add(Button button) {
+  View add(Button button) {
     super.add(button);
     int margin = 4;
-    button.setHeight(this.dimensions.dims[1]);
+    int Height = this.dimensions.dims[1];
+    button.setHeight(Height);
+    if(button.point.y > this.point.y + Height || button.point.y < this.point.y) {
+      button.point.y = this.point.y;
+    }
     int Width = this.dimensions.dims[0] / this.buttons.size() - margin * 2;
     for(int i = 0; i < this.buttons.size(); i++) {
       Button b = this.buttons.get(i);
       b.setWidth(Width);
       b.setX(margin + this.point.x + (Width + margin * 2) * i);
     }
+    return this;
   }
 }
 /***********************************************************************************************/
@@ -487,9 +508,16 @@ class CheckBox extends Widget {
 
 //Default slider is vertical. Dimensions: 0: x; 1: y; 2: value
 /***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
 abstract class Slider extends Widget {
+  int output_range;
   Slider(Point point, Dimensions dimensions) {
     super(point,dimensions);
+    this.output_range = 1;
+  }
+  Slider(Point point, Dimensions dimensions, int output_range) {
+    this(point,dimensions);
+    this.output_range = output_range;
   }
   String toString() {
     return str(floor(this.getValue() * OUTPUT_RANGE));
@@ -504,7 +532,7 @@ abstract class Slider extends Widget {
     this.dimensions.dims[2] = (int)limit(Width,0,dimensions.dims[0]);
   }
   void display() {
-    text(getValue(),this.point.x, this.point.y - 15);
+    //text(getValue(),this.point.x, this.point.y - 15);
     fill(255);
     stroke(0);
     rect(point.x, point.y, dimensions.dims[0],dimensions.dims[1]);
@@ -514,9 +542,13 @@ abstract class Slider extends Widget {
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 class Vertical_Slider extends Slider {
   Vertical_Slider(Point point, Dimensions dimensions) {
     super(point, dimensions);
+  }
+  Vertical_Slider(Point point, Dimensions dimensions, int output_range) {
+    super(point, dimensions, output_range);
   }
   void display() {
     super.display();
@@ -524,16 +556,20 @@ class Vertical_Slider extends Slider {
     rect(point.x, point.y + dimensions.dims[1], dimensions.dims[0], -dimensions.dims[2]);
   }  
   float getValue() {
-    return this.dimensions.dims[2] / (float)this.dimensions.dims[1];
+    return this.dimensions.dims[2] / (float)this.dimensions.dims[1] * this.output_range;
   }
   void onMouseDrag(PVector mouse) {
     setHeight(-mouseY + point.y + dimensions.dims[1]);
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 class Horizontal_Slider extends Slider {
   Horizontal_Slider(Point point, Dimensions dimensions) {
     super(point, dimensions);
+  }
+  Horizontal_Slider(Point point, Dimensions dimensions, int output_range) {
+    super(point, dimensions, output_range);
   }
   void display() {
     super.display();
@@ -541,12 +577,37 @@ class Horizontal_Slider extends Slider {
     rect(point.x, point.y, dimensions.dims[2], dimensions.dims[1]);
   }
   float getValue() {
-    return this.dimensions.dims[2] / (float)this.dimensions.dims[0];
+    return this.dimensions.dims[2] / (float)this.dimensions.dims[0] * this.output_range;
   }
   void onMouseDrag(PVector mouse) {
     setWidth(mouseX - point.x);
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class CSS_Slider extends Horizontal_Slider {
+  String selector, property;
+  CSS_Slider(Point point, Dimensions dimensions, int output_range, String selector, String property) {
+    super(point, dimensions, output_range);
+    this.selector = selector;
+    this.property = property;
+  }
+  void display() {
+    super.display();
+    fill(0);
+    text(getValue(),this.point.x + this.dimensions.dims[0], this.point.y + 15);
+  }
+  String getSelector() {
+    return this.selector;
+  }
+  String getProperty() {
+    return this.property;
+  }
+  float getValue() {
+    return super.getValue();
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/
 
 
@@ -784,6 +845,11 @@ interface Fire {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class Shooter extends Ball {
+  Shooter.MachineGun machineGun = new MachineGun();
+  Shooter.SniperRifle sniperRifle = new SniperRifle();
+  Shooter.Pistol pistol = new Pistol();
+  Shooter.Shotgun shotgun = new Shotgun();
+  
   Shooter.Gun gun;
   Shooter(Point point, Dimensions dimensions) {
     super(point, dimensions);
@@ -791,11 +857,13 @@ class Shooter extends Ball {
   }
   void processKeyDown(char c) {
     switch(c) {
-      case '1': this.gun = new MachineGun();
+      case '1': this.gun = machineGun;
         break;
-      case '2': this.gun = new SniperRifle();
+      case '2': this.gun = sniperRifle;
         break;
-      case '3': this.gun = new Pistol();
+      case '3': this.gun = pistol;
+        break;
+      case '4': this.gun = shotgun;
         break;
       case 't': this.pullTrigger();
       break;
@@ -876,6 +944,17 @@ class Shooter extends Ball {
     }
     void pullTrigger() {
       fire();
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  class Shotgun extends Gun {
+    Shotgun() {
+      this.bulletVelocity = 8;
+    }
+    void pullTrigger() {
+      for(int i = 0; i < 8; i++) {
+        fire().vel.rotate(random(-0.3,0.3));
+      }
     }
   }
 }
