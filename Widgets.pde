@@ -245,6 +245,12 @@ class Button extends Widget implements Command {
     }
   }
 }
+
+class Navigation_Button extends Button {
+  Navigation_Button(Point point, View target) {
+    super(new ChangeView(target), target.name, color(255), point, BUTTON_DEFAULT_DIMENSIONS);
+  }
+}
 /***********************************************************************************************/
 
 
@@ -266,11 +272,13 @@ class Rotator extends Widget {
   int getRadius() {
     return getDiameter() / 2;
   }
+  void setHeading(float heading) {
+    this.heading = heading;
+  }
   void display() {
    stroke(0);
    noFill();
    point(point.x,point.y);
-   //ellipse(point.x,point.y,getDiameter(),getDiameter());
    ellipse(this.point, this.dimensions);
    fill(0);
    //line(point.x, point.y, point.x + this.getRadius() * cos(heading), point.y + this.getRadius() * sin(heading));
@@ -279,6 +287,8 @@ class Rotator extends Widget {
    rotate(heading);
    line(0,0, this.getRadius(), 0);
    popMatrix();
+   fill(0);
+   text(this.toString(), point.x, point.y);
   }
   boolean isTarget() {
     return isTargetEllipse(this.point, this.dimensions);
@@ -288,7 +298,12 @@ class Rotator extends Widget {
     this.mouseDisplacement = PVector.sub(new PVector(mouseX,mouseY),new PVector(this.point.x,this.point.y));
   }
   void onDrag(PVector drag) {
-    this.heading += PVector.sub(new PVector(mouseX,mouseY),this.point.toPVector()).heading() - PVector.sub(new PVector(pmouseX,pmouseY),this.point.toPVector()).heading();
+    this.setHeading((
+                    this.heading 
+                  + TWO_PI 
+                  + PVector.sub(new PVector(mouseX,mouseY),this.point.toPVector()).heading() 
+                  - PVector.sub(new PVector(pmouseX,pmouseY),this.point.toPVector()).heading())
+                  % TWO_PI);
   }
   String toString() {
     return ""+heading;

@@ -12,7 +12,7 @@ void baseDeclarations() {
   COLORS.put("white", color(255,255,255));
   COLORS.put("green", color(0,255,0));
   DEFAULT_TEXT_SIZE = 15;
-  BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/5-1, 100);
+  BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/6-1, 100);
 }
 
 /*
@@ -83,6 +83,7 @@ Point       TOP_LEFT;
 Point[]     TOP_THIRDS;
 Point[]     TOP_FOURTHS;
 Point[]     TOP_FIFTHS;
+Point[]     TOP_SIXTHS;
 
 
 //Point       TOP_ONE_THIRDS,
@@ -97,7 +98,8 @@ View        ACTION_BAR,
             CONFIGURE_MENU,
             FLIGHT_MENU,
             DEVELOPER_MENU,
-            BALL_GAME;
+            BALL_GAME,
+            WORD_TRAINER;
             
 Dimensions  BUTTON_DEFAULT_DIMENSIONS,
             SLIDER_DEFAULT_DIMENSIONS;
@@ -147,6 +149,7 @@ void initialiseHackDroneDeclarations() {
   TOP_THIRDS  = new Point[] {new Point(TOP_LEFT),new Point(width/3,0),new Point(width*2/3,0)};
   TOP_FOURTHS = new Point[] {new Point(TOP_LEFT),new Point(width/4,0),new Point(width*2/4,0),new Point(width*3/4,0)};
   TOP_FIFTHS  = new Point[] {new Point(TOP_LEFT),new Point(width/5,0),new Point(width*2/5,0),new Point(width*3/5,0),new Point(width*4/5,0)};
+  TOP_SIXTHS  = new Point[] {new Point(TOP_LEFT),new Point(width/6,0),new Point(width*2/6,0),new Point(width*3/6,0),new Point(width*4/6,0),new Point(width*5/6,0)};
   
   A_BIT_TO_THE_LEFT = new Point(-100, 0);
   A_BIT_TO_THE_RIGHT  = new Point(100, 0);
@@ -192,12 +195,19 @@ void initialiseHackDroneDeclarations() {
   BALL_GAME = new View("Ball game view");
   BALL_GAME.add(new Ball(new Point(width/2, height/2), new Dimensions(30)));
   
+  WORD_TRAINER = new View("Word trainer");
+  WORD_TRAINER.add(new Rotator(new Point(width/3, height/2), new Dimensions(300)));
+  //WORD_TRAINER.add(new Button(new Point(width*2/3, height/2), new Dimensions(100,25)));
+  WORD_TRAINER.add(new TextBox(new Point(width*2/3, height/2).add(A_BIT_TO_THE_RIGHT), new Dimensions(100,25)));
+  
   ACTION_BAR = new View();
   system.action_bar = ACTION_BAR;
   system.active_view = MAIN_MENU;
-  ACTION_BAR.add(new Button(new ChangeView(CONFIGURE_MENU),  "Configure menu", color(255,255,255),  TOP_FIFTHS[0], BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(new Button(new ChangeView(MAIN_MENU),       "Main menu",      color(255),          TOP_FIFTHS[1], BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(new Button(new ChangeView(FLIGHT_MENU),     "Flight menu",    color(255),          TOP_FIFTHS[2], BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(new Button(new ChangeView(DEVELOPER_MENU),  "DEVELOPER",      color(255),          TOP_FIFTHS[3], BUTTON_DEFAULT_DIMENSIONS));
-  ACTION_BAR.add(new Button(new ChangeView(BALL_GAME),       "Ball game",      color(255),          TOP_FIFTHS[4], BUTTON_DEFAULT_DIMENSIONS));
+  //Adding new navigation button needs to adjust BUTTON_DEFAULT_DIMENSIONS = new Dimensions(width/6-1, 100); in baseDeclarations to the correct array length
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[0], CONFIGURE_MENU));
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[1], MAIN_MENU));
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[2], FLIGHT_MENU));
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[3], DEVELOPER_MENU));
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[4], BALL_GAME));
+  ACTION_BAR.add(new Navigation_Button(TOP_SIXTHS[5], WORD_TRAINER));
 }
