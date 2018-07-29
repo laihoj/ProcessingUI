@@ -196,7 +196,7 @@ void initialiseHackDroneDeclarations() {
   DEVELOPER_MENU.add(new Button(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
   
   BALL_GAME = new View("Ball game view");
-  BALL_GAME.add(new Ball(new Point(width/2, height/2), new Dimensions(30)));
+  BALL_GAME.add(new Shooter(new Point(width/2, height/2), new Dimensions(30)));
   
   WORD_TRAINER = new View("Word trainer");
   WORD_TRAINER.add(new Rotator(new Point(width/3, height/2), new Dimensions(300)));

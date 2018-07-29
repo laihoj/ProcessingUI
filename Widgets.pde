@@ -716,7 +716,7 @@ class Ball extends Ellipse_Widget {
     vel.add(force);
   }
   //case up down left right dont seem to work
-  void processKey(char c) {
+  void processKeyHold(char c) {
     switch(c) {
       case 'w': this.push(UPWARDS);
         break;
@@ -728,7 +728,12 @@ class Ball extends Ellipse_Widget {
         break;
     }
   }
-  
+  void processKeyDown(char c) {
+    switch(c) {
+      case 't': this.shots.add(fire());
+        break;
+    }
+  }
   //interaction
   ////////////
   void onMousePress() {
@@ -741,12 +746,10 @@ class Ball extends Ellipse_Widget {
     this.point.sub(drag);
   }
   void onKeyDown(char c) {
-    if(c=='t') {
-      this.shots.add(fire());
-    }
+    processKeyDown(c);
   }
   void onKeyHold(char c) {
-    processKey(c);
+    processKeyHold(c);
   }
   
   class Projectile extends Ellipse_Widget {
@@ -765,6 +768,114 @@ class Ball extends Ellipse_Widget {
              this.point.x > width ||
              this.point.y < 0 ||
              this.point.y > height;
+    }
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/***********************************************************************************************/
+
+/***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
+interface Fire {
+  void pullTrigger();
+  void holdTrigger();
+  Shooter.Projectile fire();
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class Shooter extends Ball {
+  Shooter.Gun gun;
+  Shooter(Point point, Dimensions dimensions) {
+    super(point, dimensions);
+    this.gun = null;
+  }
+  void processKeyDown(char c) {
+    switch(c) {
+      case '1': this.gun = new MachineGun();
+        break;
+      case '2': this.gun = new SniperRifle();
+        break;
+      case '3': this.gun = new Pistol();
+        break;
+      case 't': this.pullTrigger();
+      break;
+    }
+  }
+  void processKeyHold(char c) {
+    super.processKeyHold(c);
+    switch(c) {
+      case 't': this.holdTrigger();
+        break;
+    }
+  }
+  void pullTrigger() {
+    if(this.gun != null) {
+      this.gun.pullTrigger();
+    }
+  }
+  void holdTrigger() {
+    if(this.gun != null) {
+      this.gun.holdTrigger();
+    }
+  }
+  void onMousePress() {
+    this.pullTrigger();
+  }
+  void onMouseHold() {
+    this.holdTrigger();
+  }
+  void onKeyDown(char c) {
+    processKeyDown(c);
+  }
+  void onKeyHold(char c) {
+    processKeyHold(c);
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  abstract class Gun implements Fire {
+    float bulletVelocity;
+    //Combine velocities of both the shooter and bullet to get total velocity vector
+    Shooter.Projectile fire() {
+      PVector shootervel = Shooter.this.vel;
+      PVector shotvel = new PVector(bulletVelocity,0).rotate(PVector.sub(new PVector(mouseX,mouseY), Shooter.this.point.toPVector()).heading());
+      shotvel.add(shootervel);
+      Shooter.Projectile shot = new Shooter.Projectile(shotvel);
+      //For display purposes, the shooter is responsible for displaying the shots. Consider moving responsibility to View or Container
+      Shooter.this.shots.add(shot);
+      return shot;
+    }
+    void pullTrigger() {}
+    void holdTrigger() {}
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  class MachineGun extends Gun {
+    MachineGun() {
+      this.bulletVelocity = 10;
+    }
+    void pullTrigger() {
+      fire();
+    }
+    void holdTrigger() {
+      fire();
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  class SniperRifle extends Gun {
+    SniperRifle() {
+      this.bulletVelocity = 30;
+    }
+    void pullTrigger() {
+      fire();
+    }
+  }
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  class Pistol extends Gun {
+    Pistol() {
+      this.bulletVelocity = 8;
+    }
+    void pullTrigger() {
+      fire();
     }
   }
 }
