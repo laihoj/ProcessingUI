@@ -264,7 +264,7 @@ class Shooter extends Ball {
 //Composer - make music
 View composer() {
   View app = new Composer();
-  system.navigation_bar.add(new Navigation_Button(app));
+  System.navigation_bar.add(new Navigation_Button(app));
   return new Composer();
 }
 /***********************************************************************************************/
@@ -298,7 +298,7 @@ class Composer extends View {
 /***********************************************************************************************/
 View developer() {
   View app = new Developer();
-  system.navigation_bar.add(new Navigation_Button(app));
+  System.navigation_bar.add(new Navigation_Button(app));
   return new Developer();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////

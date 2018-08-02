@@ -90,7 +90,7 @@ class View {
   View(String name) {
     mouseListener = new MouseListener();
     keyboardListener = new KeyboardListener();
-    system.add(this);
+    System.add(this);
     this.name = name;
   }
   String toString() {
@@ -372,9 +372,9 @@ class Button extends Widget implements Command {
     super(point,dimensions);
     this.attributes = attributes;
     //this.color_pressed = colorify(system.getProperty(this.attributes.css_class, "color-pressed"));
-    this.color_pressed = COLORS.get(system.getCSS().properties.get(this.attributes.css_class).get("color-pressed"));
-    this.color_base = COLORS.get(system.getCSS().properties.get(this.attributes.css_class).get("color-base"));
-    this.color_hovering = COLORS.get(system.getCSS().properties.get(this.attributes.css_class).get("color-hovering"));
+    this.color_pressed = COLORS.get(System.getCSS().properties.get(this.attributes.css_class).get("color-pressed"));
+    this.color_base = COLORS.get(System.getCSS().properties.get(this.attributes.css_class).get("color-base"));
+    this.color_hovering = COLORS.get(System.getCSS().properties.get(this.attributes.css_class).get("color-hovering"));
     this.text = text;
   }
   void display() {
@@ -416,7 +416,7 @@ class Button extends Widget implements Command {
   }
   //unlike normal commands (which extend AbstractCommand {button extends widget}), queue needs to be implemented
   void queue() {
-    system.commands.add(this);
+    System.commands.add(this);
   }
   void onMouseRelease() {  
     if(this.attributes != null) {

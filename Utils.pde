@@ -49,9 +49,9 @@ class Save_Configurations extends AbstractCommand {
   }
   void execute() {
     for(CSS_Slider widget: this.css_widgets) {
-      system.css.put(widget.getSelector(),widget.getProperty(),""+(int)Math.floor(widget.getValue()));
+      System.css.put(widget.getSelector(),widget.getProperty(),""+(int)Math.floor(widget.getValue()));
     }
-    system.css.save();
+    System.css.save();
   }
 }
 

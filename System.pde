@@ -1,59 +1,52 @@
-class System {
-  CSS_File css = null;
-  ArrayList<View> views;
-  ArrayList<Command> commands;
-  View active_view;
-  Container navigation_bar;
-  System() {
-    views = new ArrayList<View>();
-    commands = new ArrayList<Command>();
-    active_view = null;
-    navigation_bar = null;
-  }
+static class System {
+  static CSS_File css = null;
+  static ArrayList<View> views = new ArrayList<View>();
+  static ArrayList<Command> commands = new ArrayList<Command>();
+  static View active_view = null;
+  static Container navigation_bar = null;
+  //System() {
+  //  views = new ArrayList<View>();
+  //  commands = new ArrayList<Command>();
+  //  active_view = null;
+  //  navigation_bar = null;
+  //}
   
   
-  void add(View view) {
-    this.views.add(view);
+  static void add(View view) {
+    views.add(view);
   }
-  void remove(View view) {
-    this.views.remove(view);
+  static void remove(View view) {
+    views.remove(view);
   }
-  void removeTopWidget() {
-    int active_view_widgets_latest = active_view.widgets.size() - 1;
-    if(active_view_widgets_latest > 0) {
-      Widget top_widget = active_view.widgets.get(active_view_widgets_latest);
-      this.active_view.remove(top_widget);
+  static void activate(View view) {
+    active_view = view;
+  }
+  static void display() {
+    if(navigation_bar != null) {
+      navigation_bar.display();
+    }
+    if(active_view != null) {
+      active_view.display();
     }
   }
-  void activate(View view) {
-    this.active_view = view;
-  }
-  void display() {
-    if(this.navigation_bar != null) {
-      this.navigation_bar.display();
+  static void listen() {
+    if(navigation_bar != null) {
+      navigation_bar.listen();
     }
-    if(this.active_view != null) {
-      this.active_view.display();
+    if(active_view != null) {
+      active_view.listen();
     }
   }
-  void listen() {
-    if(this.navigation_bar != null) {
-      this.navigation_bar.listen();
-    }
-    if(this.active_view != null) {
-      this.active_view.listen();
-    }
-  }
-  void execute() {
-    for(Command command: this.commands) {
+  static void execute() {
+    for(Command command: commands) {
       command.execute();
     }
-    this.commands = new ArrayList<Command>();
+    commands = new ArrayList<Command>();
   }
-  void next() {
-    this.listen();
-    this.display();
-    this.execute();
+  static void next() {
+    listen();
+    display();
+    execute();
   }
   
   
@@ -61,9 +54,9 @@ class System {
   Utilitarian:
   Gets parsed to int system value from css style file of a certain name
   */
-  int getInt(String name) {
+  static int getInt(String name) {
     try {
-      return Integer.parseInt(this.getProperty("system", name));
+      return Integer.parseInt(getProperty("system", name));
     } catch (NumberFormatException e) {
       println("Problem with Selector:Property system:" + name + ",  " + e);
       //exit();
@@ -74,7 +67,7 @@ class System {
   
   ////////////css stuff
   /*gets css value corresponding to a parametrised selector and property*/
-  String getProperty(String selector, String property) {
+  static String getProperty(String selector, String property) {
     try {
       return getSelector(selector).get(property);
     } catch (NullPointerException e) {
@@ -85,21 +78,21 @@ class System {
   }
   
   /*gets css block corresponding to a parametrised selector*/
-  HashMap<String, String> getSelector(String string) {
+  static HashMap<String, String> getSelector(String string) {
     return getProperties().get(string);
   }
   
   
   /*Returns the datastructure of the css file read earlier*/
-  HashMap<String, HashMap<String, String>> getProperties() {
+  static HashMap<String, HashMap<String, String>> getProperties() {
     return css.properties;
   }
   
-  CSS_File getCSS() {
-    return this.css;
+  static CSS_File getCSS() {
+    return css;
   }
-  void add(CSS_File css) {
-    this.css = css;
+  static void add(CSS_File file) {
+    css = file;
   }
   ///////////no more css stuff
 }
@@ -112,8 +105,8 @@ class ChangeView extends AbstractCommand {
     this.target = target;
   }
   void execute() {
-    println("View changing from " + system.active_view.toString() + " to " + this.target);
-    system.activate(target);
+    println("View changing from " + System.active_view.toString() + " to " + this.target);
+    System.activate(target);
   }
 }
 /***********************************************************************************************/
@@ -129,7 +122,7 @@ interface Command {
 
 abstract class AbstractCommand implements Command {
   void queue() {
-    system.commands.add(this);
+    System.commands.add(this);
   }
 }
 

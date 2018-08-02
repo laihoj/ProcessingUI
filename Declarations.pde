@@ -208,8 +208,8 @@ void initialiseHackDroneDeclarations() {
   WORD_TRAINER.add(new TextBox(new Point(width*2/3, height/2).add(A_BIT_TO_THE_RIGHT), new Dimensions(100,25)));
   
   NAVIGATION_BAR = new Container(new Dimensions(width, 50));
-  system.navigation_bar = NAVIGATION_BAR;
-  system.active_view = MAIN_MENU;
+  System.navigation_bar = NAVIGATION_BAR;
+  System.active_view = MAIN_MENU;
   
   NAVIGATION_BAR.add(new Navigation_Button(CONFIGURE_MENU))
             .add(new Navigation_Button(MAIN_MENU))
