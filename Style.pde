@@ -14,7 +14,7 @@ HashMap<String,HashMap<String,String>> readCSS(String filename) {
     line = line.trim();
     file += line;
   }
-  for(String block: file.split("}")) {
+  for(String block: file.split("\\}")) {
     String[] selectorAndProperty = block.split("\\{");
     String selector = selectorAndProperty[0];
     String[] declarations = selectorAndProperty[1].split(":|;");

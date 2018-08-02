@@ -51,7 +51,7 @@ void initialiseTextBoxDeclarations() {
 ////////////////////////////////////////////////////////////////////////////////
 //HackDroneX
 ////////////////////////////////////////////////////////////////////////////////
-import processing.serial.*;
+//import processing.serial.*;
 
 /***********************
 Android-specific imports
@@ -118,7 +118,7 @@ static int colorify(String colorword) {
   return COLORS.get(colorword);
 }
 
-Serial myPort = null;
+//Serial myPort = null;
 
 //think about where these should go
 Joystick_Left leftStick;

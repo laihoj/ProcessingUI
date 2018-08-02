@@ -808,10 +808,12 @@ class TextBox extends Widget implements Enter, Backspace {
   void onKeyDown(char c) {
     switch(c) {
       case BACKSPACE: 
-      case DELETE: onBackspace();
+      //case DELETE: 
+      onBackspace();
         break;
       case ENTER:
-      case RETURN: onEnter();
+      //case RETURN: 
+      onEnter();
         break;
       default: this.text += c;
     }

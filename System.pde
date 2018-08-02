@@ -66,7 +66,7 @@ class System {
       return Integer.parseInt(this.getProperty("system", name));
     } catch (NumberFormatException e) {
       println("Problem with Selector:Property system:" + name + ",  " + e);
-      exit();
+      //exit();
       return -1;
     }
   }
@@ -79,7 +79,7 @@ class System {
       return getSelector(selector).get(property);
     } catch (NullPointerException e) {
       println("Selector:Property " + selector + ":" + property + " was not found: " + e);
-      exit();
+      //exit();
       return "Error, please read console for more details";
     }
   }
