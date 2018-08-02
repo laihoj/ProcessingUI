@@ -75,3 +75,15 @@ class Attributes {
     this.onRelease = onRelease;
   }
 }
+
+class Style {
+  color stroke, fill;
+  Style() {
+    this.stroke = -1;
+    this.fill = -1;
+  }
+  void apply() {
+    if(stroke == -1) {noStroke();} else {stroke(255);}
+    if(fill == -1) {noFill();} else {fill(255);}
+  }
+}

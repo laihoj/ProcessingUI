@@ -14,6 +14,10 @@ class Point {
     this.x = x;
     this.y = y;
   }
+  Point() {
+    this.x = 0;
+    this.y = 0;
+  }
   Point add(Point that) {
     this.x += that.x;
     this.y += that.y;
@@ -51,17 +55,28 @@ class Point {
 /***********************************************************************************************/
 class Dimensions {
   int[] dims;
+  Dimensions(int a) {
+    this.dims = new int[]{a,0};
+  }
+  Dimensions(int a, int b) {
+    this.dims = new int[]{a,b};
+  }
   Dimensions(int... dims) {
     this.dims = dims;
   }
   Dimensions(Dimensions dimensions) {
-    this.dims = dimensions.dims;
+    this.dims = new int[dimensions.dims.length];
+    for(int i = 0; i < dimensions.dims.length; i++) {
+      this.dims[i] = dimensions.dims[i];
+    }
+    //this.dims = dimensions.dims;
   }
 }
 /***********************************************************************************************/
 
 
 /***********************************************************************************************/
+/////////////////////////////////////////////////////////////////////////////////////////////////
 class View {
   String name;
   ArrayList<Container> containers = new ArrayList<Container>();
@@ -124,7 +139,10 @@ class View {
     }
   }
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
 class Container extends View {
   Point point;
   Dimensions dimensions;
@@ -142,7 +160,9 @@ class Container extends View {
     this.point = point;
     this.dimensions = dimensions;
   }
-  View add(Button button) {
+  
+  //this is stupid. Have button and widget and container extend a common element class
+  Container add(Button button) {
     super.add(button);
     int margin = 4;
     int Height = this.dimensions.dims[1];
@@ -158,7 +178,104 @@ class Container extends View {
     }
     return this;
   }
+  Container add(Rotator widget) {
+    super.add(widget);
+    int margin = 4;
+    int diameter = min(this.dimensions.dims[0],this.dimensions.dims[1]);
+    widget.setDiameter(diameter);
+    widget.setY(this.point.y);
+    
+    for(int i = 0; i < this.widgets.size(); i++) {
+      Widget b = this.widgets.get(i);
+      b.setX(margin + this.point.x + (diameter + margin * 2) * i);
+    }
+    return this;
+  }
+  //View add(Widget widget) {
+  //  super.add(widget);
+  //  int margin = 4;
+  //  //int Width = min(this.dimensions.dims[0],this.dimensions.dims[1]);
+  //  //int Height = min(this.dimensions.dims[0],this.dimensions.dims[1]);
+  //  int Width = this.dimensions.dims[0];
+  //  int Height = this.dimensions.dims[1];
+  //  widget.setHeight(Height);
+  //  widget.setWidth(Width);
+  //  if(widget.point.y > this.point.y + Height || widget.point.y < this.point.y) {
+  //    widget.setY(this.point.y + Height / 2);
+  //  }
+    
+  //  for(int i = 0; i < this.widgets.size(); i++) {
+  //    Widget b = this.widgets.get(i);
+  //    b.setX(this.point.x + Width+ Width * i);
+  //  }
+  //  return this;
+  //}
+  void display() {
+    super.display();
+    noFill();
+    stroke(0);
+    rect(this.point, this.dimensions);
+  }
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class Grid extends Container {
+  Container[][] cells;
+  //indices
+  int x, y;
+  Grid(Point point, Dimensions dimensions, int x, int y) {
+    this.point = point;
+    this.dimensions = dimensions;
+    this.x = x;
+    this.y = y;
+    this.cells = new Container[x][y];
+    //Have all cells use this dimensions object, that way changing one changes all
+    Dimensions cellDims = new Dimensions(this.dimensions.dims[0] / x, this.dimensions.dims[1] / y);
+    for(int j = 0; j < this.y; j++) {
+      for(int i = 0; i < this.x; i++) {
+        cells[i][j] = new Container(new Point(this.point.x + cellDims.dims[0] * i, this.point.y + cellDims.dims[1] * j), cellDims);
+      }
+    }
+  }
+  Grid(int x, int y) {
+    this(TOP_LEFT, FULL_SCREEN, x, y);
+  }
+  void display() {
+    for(Container[] row: this.cells) {
+      for(Container container: row) {
+        container.display();
+        noFill();
+        stroke(0);
+        rect(container.point, container.dimensions);
+      }
+    }
+    
+  }
+  void listen() {
+    super.listen();
+    for(Container[] row: this.cells) {
+      for(Container container: row) {
+        container.listen();
+      }
+    }
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+class CheckBox_Grid extends Grid {
+  CheckBox_Grid(Point point, Dimensions dimensions, int x, int y) {
+    super(point, dimensions, x, y);
+    for(Container[] row: this.cells) {
+      for(Container container: row) {
+        container.add(new CheckBox(new Point(container.point), new Dimensions(container.dimensions)));
+      }
+    }
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/
 
 
@@ -197,7 +314,21 @@ abstract class Widget extends Observer implements Displayable {
   void onKeyHold(char c) {}
   void onKeyUp(char c) {}
   boolean isSelected() {return selected;}
-
+  void setWidth(int Width) {
+    this.dimensions.dims[0] = Width;
+  }
+  void setHeight(int Height) {
+    this.dimensions.dims[1] = Height;
+  }
+  void setDiameter(int diameter) {
+    this.dimensions.dims[0] = diameter;
+  }
+  void setX(float x) {
+    this.point = new Point(x, this.point.y);
+  }
+  void setY(float y) {
+    this.point = new Point(this.point.x, y);
+  }
 }
 
 /*
@@ -276,18 +407,7 @@ class Button extends Widget implements Command {
     textSize(15);
     text(text,point.x + dimensions.dims[0]/2,point.y+dimensions.dims[1]/2);
   }
-  void setWidth(int Width) {
-    this.dimensions.dims[0] = Width;
-  }
-  void setHeight(int Height) {
-    this.dimensions.dims[1] = Height;
-  }
-  void setX(float x) {
-    this.point = new Point(x, this.point.y);
-  }
-  void setY(float y) {
-    this.point = new Point(this.point.x, y);
-  }
+  
   boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
   }
@@ -322,7 +442,7 @@ class Navigation_Button extends Button {
 
 //The dimensions.dim[0] refers to the diameter of the outer circle  
 /***********************************************************************************************/
-class Rotator extends Widget {
+class Rotator extends Ellipse_Widget {
   float heading = 0; 
   PVector mouseDisplacement = new PVector(0,0);
   Rotator(Point point, Dimensions dimensions) {
@@ -347,15 +467,14 @@ class Rotator extends Widget {
    fill(0);
    //line(point.x, point.y, point.x + this.getRadius() * cos(heading), point.y + this.getRadius() * sin(heading));
    pushMatrix();
-   translate(point.x, point.y);
+   translate(point.x + this.getRadius(), point.y + this.getRadius());
    rotate(heading);
    line(0,0, this.getRadius(), 0);
    popMatrix();
    fill(0);
-   text(this.toString(), point.x, point.y);
-  }
-  boolean isTarget() {
-    return isTargetEllipse(this.point, this.dimensions);
+   text(this.toString(), point.x + this.getRadius(), point.y);
+   noFill();
+   rect(this.point.x,this.point.y, this.getDiameter(),this.getDiameter());
   }
   void onMousePress() {
     this.mouseDisplacement = PVector.sub(new PVector(mouseX,mouseY),new PVector(this.point.x,this.point.y));
@@ -377,7 +496,7 @@ class Rotator extends Widget {
 
 //The dimensions.dim[1] refers to the diameter of the outer circle, [0] is the inner circle  
 /***********************************************************************************************/
-class Joystick extends Widget {
+class Joystick extends Ellipse_Widget {
   boolean springy;
   float spring = 0.95;
   Point stick;
@@ -414,9 +533,9 @@ class Joystick extends Widget {
    stroke(0);
    noFill();
    point(point.x,point.y);
-   ellipse(point.x,point.y,getDiameter(),getDiameter());
+   ellipse(point.x - getDiameter() / 2, point.y - getDiameter() / 2, getDiameter(), getDiameter());
    if(this.pressed) fill(125);
-   ellipse(stick.x,stick.y,dimensions.dims[0],dimensions.dims[0]);
+   ellipse(stick.x - dimensions.dims[0] / 2, stick.y - dimensions.dims[0] / 2, dimensions.dims[0], dimensions.dims[0]);
    if(stick.dist(point) > dimensions.dims[0] / 2) {
      line(point.x, point.y, stick.x + dimensions.dims[0] / 2 * cos(point.heading(stick)), stick.y + dimensions.dims[0] / 2 * sin(point.heading(stick)));
    }
@@ -474,9 +593,15 @@ class Joystick_Right extends Joystick {
 
 /***********************************************************************************************/
 class CheckBox extends Widget {
+  String text;
   boolean checked = false;
   CheckBox(Point point, Dimensions dimensions) {
     super(point,dimensions);
+    this.text = "";
+  }
+  CheckBox(Point point, Dimensions dimensions, String text) {
+    super(point, dimensions);
+    this.text = text;
   }
   void check() {
     this.checked = !this.checked;
@@ -494,6 +619,7 @@ class CheckBox extends Widget {
     }
     rectMode(CORNER);
     rect(point.x,point.y,dimensions.dims[0],dimensions.dims[1]);
+    text(text,point.x,point.y);
   }
   boolean isTarget() {
     return isTargetRect(this.point, this.dimensions);
@@ -702,261 +828,4 @@ class TextBox extends Widget implements Enter, Backspace {
     if(this.text.length() > 0) this.text = this.text.substring(0, this.text.length() - 1);
   }
 }
-/***********************************************************************************************/
-
-
-
-//HERE IS THE AWESOME BALL GAME WHICH DEMONSTRATES INTERACTION BY BOTH MOUSE AND KEYBOARD
-/***********************************************************************************************/
-/////////////////////////////////////////////////////////////////////////////////////////////////
-PVector LEFTWARDS = new PVector(-0.35,0);
-PVector RIGHTWARDS = new PVector(0.35,0);
-PVector UPWARDS = new PVector(0,-0.35);
-PVector DOWNWARDS = new PVector(0,0.35);
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-class Ball extends Ellipse_Widget {
-  PVector vel;
-  ArrayList<Ball.Projectile> shots; 
-  Ball(Point point, Dimensions dimensions) {
-    super(point, dimensions);
-    vel = new PVector();
-    this.selected = true;
-    this.shots = new ArrayList<Ball.Projectile>();
-  }
-  void display() {
-    /*Physics*/
-    this.point.add(vel);
-    this.vel.mult(0.93);
-    /*Rules*/
-    if(this.outOfBounds()) {
-      this.reset();
-    }
-    /*Styling*/
-    fill(255,0,0);
-    noStroke();
-    if(this.hovering) {
-      fill(255,200,200);
-    }
-    /*Draw*/
-    ellipse(this.point, this.dimensions);
-    for(int i = 0; i < this.shots.size(); i++) {
-      Ball.Projectile shot = this.shots.get(i);
-      if(!shot.outOfBounds()) {
-        shot.display();
-      } else {
-        this.shots.remove(shot);
-      }
-    }
-  }
-  
-  //override release() to stop ball from being deselected
-  void releaseMouse(PVector mouse, PVector dragment) {}
-  
-  //rules
-  ////////////
-  boolean outOfBounds() {
-    return this.point.x < 0 ||
-           this.point.x > width ||
-           this.point.y < 0 ||
-           this.point.y > height;
-  }
-  Ball.Projectile fire() {
-    return new Ball.Projectile(PVector.sub(new PVector(mouseX,mouseY), this.point.toPVector()).mult(0.02));
-  }
-  
-  //utilitarian
-  ////////////
-  void reset() {
-    this.vel.mult(0);
-    this.point.x = width/2;
-    this.point.y = height/2;
-  }
-  void push(PVector force) {
-    vel.add(force);
-  }
-  //case up down left right dont seem to work
-  void processKeyHold(char c) {
-    switch(c) {
-      case 'w': this.push(UPWARDS);
-        break;
-      case 'a': this.push(LEFTWARDS);
-        break;
-      case 's': this.push(DOWNWARDS);
-        break;
-      case 'd': this.push(RIGHTWARDS);
-        break;
-    }
-  }
-  void processKeyDown(char c) {
-    switch(c) {
-      case 't': this.shots.add(fire());
-        break;
-    }
-  }
-  //interaction
-  ////////////
-  void onMousePress() {
-    this.shots.add(fire());
-  }
-  void onMouseHold() {
-    this.shots.add(fire());
-  }
-  void onMouseDrag(PVector drag) {
-    this.point.sub(drag);
-  }
-  void onKeyDown(char c) {
-    processKeyDown(c);
-  }
-  void onKeyHold(char c) {
-    processKeyHold(c);
-  }
-  
-  class Projectile extends Ellipse_Widget {
-    PVector vel;
-    Projectile(PVector vel) {
-      super(Ball.this.point, new Dimensions(5));
-      this.vel = vel;
-    }
-    void display() {
-      this.point.add(vel);
-      fill(0);
-      ellipse(this.point, this.dimensions);
-    }
-    boolean outOfBounds() {
-      return this.point.x < 0 ||
-             this.point.x > width ||
-             this.point.y < 0 ||
-             this.point.y > height;
-    }
-  }
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/***********************************************************************************************/
-
-/***********************************************************************************************/
-/////////////////////////////////////////////////////////////////////////////////////////////////
-interface Fire {
-  void pullTrigger();
-  void holdTrigger();
-  Shooter.Projectile fire();
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////
-class Shooter extends Ball {
-  Shooter.MachineGun machineGun = new MachineGun();
-  Shooter.SniperRifle sniperRifle = new SniperRifle();
-  Shooter.Pistol pistol = new Pistol();
-  Shooter.Shotgun shotgun = new Shotgun();
-  
-  Shooter.Gun gun;
-  Shooter(Point point, Dimensions dimensions) {
-    super(point, dimensions);
-    this.gun = null;
-  }
-  void processKeyDown(char c) {
-    switch(c) {
-      case '1': this.gun = machineGun;
-        break;
-      case '2': this.gun = sniperRifle;
-        break;
-      case '3': this.gun = pistol;
-        break;
-      case '4': this.gun = shotgun;
-        break;
-      case 't': this.pullTrigger();
-      break;
-    }
-  }
-  void processKeyHold(char c) {
-    super.processKeyHold(c);
-    switch(c) {
-      case 't': this.holdTrigger();
-        break;
-    }
-  }
-  void pullTrigger() {
-    if(this.gun != null) {
-      this.gun.pullTrigger();
-    }
-  }
-  void holdTrigger() {
-    if(this.gun != null) {
-      this.gun.holdTrigger();
-    }
-  }
-  void onMousePress() {
-    this.pullTrigger();
-  }
-  void onMouseHold() {
-    this.holdTrigger();
-  }
-  void onKeyDown(char c) {
-    processKeyDown(c);
-  }
-  void onKeyHold(char c) {
-    processKeyHold(c);
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  abstract class Gun implements Fire {
-    float bulletVelocity;
-    //Combine velocities of both the shooter and bullet to get total velocity vector
-    Shooter.Projectile fire() {
-      PVector shootervel = Shooter.this.vel;
-      PVector shotvel = new PVector(bulletVelocity,0).rotate(PVector.sub(new PVector(mouseX,mouseY), Shooter.this.point.toPVector()).heading());
-      shotvel.add(shootervel);
-      Shooter.Projectile shot = new Shooter.Projectile(shotvel);
-      //For display purposes, the shooter is responsible for displaying the shots. Consider moving responsibility to View or Container
-      Shooter.this.shots.add(shot);
-      return shot;
-    }
-    void pullTrigger() {}
-    void holdTrigger() {}
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  class MachineGun extends Gun {
-    MachineGun() {
-      this.bulletVelocity = 10;
-    }
-    void pullTrigger() {
-      fire();
-    }
-    void holdTrigger() {
-      fire();
-    }
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  class SniperRifle extends Gun {
-    SniperRifle() {
-      this.bulletVelocity = 30;
-    }
-    void pullTrigger() {
-      fire();
-    }
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  class Pistol extends Gun {
-    Pistol() {
-      this.bulletVelocity = 8;
-    }
-    void pullTrigger() {
-      fire();
-    }
-  }
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  class Shotgun extends Gun {
-    Shotgun() {
-      this.bulletVelocity = 8;
-    }
-    void pullTrigger() {
-      for(int i = 0; i < 8; i++) {
-        fire().vel.rotate(random(-0.3,0.3));
-      }
-    }
-  }
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////
 /***********************************************************************************************/

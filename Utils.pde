@@ -19,11 +19,17 @@ boolean isTargetRect(Point point, Dimensions dimensions) {
 
 //untested
 boolean isTargetEllipse(Point point, Dimensions dimensions) {
-  return dimensions.dims[0] / 2 > sqrt((float)(Math.pow(point.x - mouseX,2) + Math.pow(point.y - mouseY,2)));
+  return dimensions.dims[0] / 2 > sqrt((float)(Math.pow(point.x + dimensions.dims[0] / 2 - mouseX,2) + Math.pow(point.y + dimensions.dims[0] / 2- mouseY,2)));
 }
 
 void ellipse(Point point, Dimensions dimensions) {
-  ellipse(point.x, point.y, dimensions.dims[0],dimensions.dims[0]);
+  ellipseMode(CORNER);
+  ellipse(point.x, point.y, dimensions.dims[0], dimensions.dims[0]);
+  //ellipse(point.x - dimensions.dims[0]/2, point.y - dimensions.dims[0]/2, dimensions.dims[0], dimensions.dims[0]);
+}
+
+void rect(Point point, Dimensions dimensions) {
+  rect(point.x, point.y, dimensions.dims[0],dimensions.dims[1]);
 }
 
 

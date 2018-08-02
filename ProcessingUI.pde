@@ -7,6 +7,8 @@
 System system;
 
 void setup() {
+  ellipseMode(CORNER);
+  rectMode(CORNER);
   system = new System();
   system.add(new CSS_File("style.css"));
   //system.css.put("body","background","green");
@@ -19,6 +21,8 @@ void setup() {
   textSize(system.getInt("textSize"));
   baseDeclarations();
   initialiseHackDroneDeclarations();
+  system.add(developer());
+  system.add(composer());
 }
 
 void draw() {

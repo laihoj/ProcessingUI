@@ -3,12 +3,12 @@ class System {
   ArrayList<View> views;
   ArrayList<Command> commands;
   View active_view;
-  Container action_bar;
+  Container navigation_bar;
   System() {
     views = new ArrayList<View>();
     commands = new ArrayList<Command>();
     active_view = null;
-    action_bar = null;
+    navigation_bar = null;
   }
   
   
@@ -29,16 +29,16 @@ class System {
     this.active_view = view;
   }
   void display() {
-    if(this.action_bar != null) {
-      this.action_bar.display();
+    if(this.navigation_bar != null) {
+      this.navigation_bar.display();
     }
     if(this.active_view != null) {
       this.active_view.display();
     }
   }
   void listen() {
-    if(this.action_bar != null) {
-      this.action_bar.listen();
+    if(this.navigation_bar != null) {
+      this.navigation_bar.listen();
     }
     if(this.active_view != null) {
       this.active_view.listen();

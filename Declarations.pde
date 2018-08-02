@@ -35,11 +35,11 @@ void initialiseTextBoxDeclarations() {
   //MAIN_MENU.add(newButton());
   
   system.active_view = MAIN_MENU;
-  //ACTION_BAR = new View();
-  //system.action_bar = ACTION_BAR;
-  //ACTION_BAR.add(newButton(new ChangeView(CONFIGURE_MENU),"Configure menu",color(255,255,255),TOP_LEFT,BUTTON_DEFAULT_DIMENSIONS));
-  //ACTION_BAR.add(newButton(new ChangeView(MAIN_MENU),"Main menu",color(255),TOP_ONE_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
-  //ACTION_BAR.add(newButton(new ChangeView(FLIGHT_MENU),"Flight menu",color(255),TOP_TWO_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
+  //NAVIGATION_BAR = new View();
+  //system.NAVIGATION_BAR = NAVIGATION_BAR;
+  //NAVIGATION_BAR.add(newButton(new ChangeView(CONFIGURE_MENU),"Configure menu",color(255,255,255),TOP_LEFT,BUTTON_DEFAULT_DIMENSIONS));
+  //NAVIGATION_BAR.add(newButton(new ChangeView(MAIN_MENU),"Main menu",color(255),TOP_ONE_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
+  //NAVIGATION_BAR.add(newButton(new ChangeView(FLIGHT_MENU),"Flight menu",color(255),TOP_TWO_THIRDS,BUTTON_DEFAULT_DIMENSIONS));
 }
 */
 
@@ -94,7 +94,7 @@ Point[]     TOP_SIXTHS;
 //            TOP_TWO_FOURTHS,
 //            TOP_THREE_FOURTHS;
 
-Container   ACTION_BAR;
+Container   NAVIGATION_BAR;
 
 View        MAIN_MENU,
             CONFIGURE_MENU,
@@ -130,7 +130,7 @@ Point A_BIT_TO_THE_LEFT;// = new Point(-100, 0);
 Point A_BIT_TO_THE_RIGHT;
 Point A_BIT_UPWARDS;//  = new Point(0, -100);
 
-TextBox INPUT;
+//TextBox INPUT;
 
 /***********************************************
 Initialization function - cleaner here than in setup()
@@ -190,17 +190,7 @@ void initialiseHackDroneDeclarations() {
   rightStick.setResting(new Point(rightStick.point)).rest();
   FLIGHT_MENU.add(leftStick);
   FLIGHT_MENU.add(rightStick);
-  DEVELOPER_MENU = new View("Developer menu view")
-              .add(new Vertical_Slider  (new Point(width/3, height/2),           new Dimensions(100,400,0)))
-              .add(new Horizontal_Slider(new Point(width*2/3, height*2/3),       new Dimensions(400,100,0)))
-              .add(new Rotator          (new Point(width*3/4,height/4),          new Dimensions(300)))
-              .add(new CheckBox         (new Point(width/2 - 100, height - 100), new Dimensions(50,50)))
-              .add(new CheckBox         (new Point(width/2, height - 100),       new Dimensions(50,50)))
-              .add(new Label            (new Point(WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_LEFT)), new String("Enter word")));
   
-  INPUT = new TextBox(new Point(WORD_INPUT_TEXTBOX_POINT), new Dimensions(WORD_INPUT_TEXTBOX_DIMENSIONS));
-  DEVELOPER_MENU.add(INPUT);
-  DEVELOPER_MENU.add(new Button(new Attributes(".button", "", "", "", new DoNothing(), new Reset_TextBox(INPUT)), "Reset", WORD_INPUT_TEXTBOX_POINT.add(A_BIT_TO_THE_RIGHT), WORD_INPUT_TEXTBOX_DIMENSIONS));
   
   BALL_GAME = new View("Ball game");
   Shooter shooter = new Shooter(new Point(width/2, height/2), new Dimensions(30));
@@ -217,15 +207,13 @@ void initialiseHackDroneDeclarations() {
   //WORD_TRAINER.add(new Button(new Point(width*2/3, height/2), new Dimensions(100,25)));
   WORD_TRAINER.add(new TextBox(new Point(width*2/3, height/2).add(A_BIT_TO_THE_RIGHT), new Dimensions(100,25)));
   
-  ACTION_BAR = new Container(new Dimensions(width, 50));
-  //ACTION_BAR = new Container();
-  system.action_bar = ACTION_BAR;
+  NAVIGATION_BAR = new Container(new Dimensions(width, 50));
+  system.navigation_bar = NAVIGATION_BAR;
   system.active_view = MAIN_MENU;
   
-  ACTION_BAR.add(new Navigation_Button(CONFIGURE_MENU))
+  NAVIGATION_BAR.add(new Navigation_Button(CONFIGURE_MENU))
             .add(new Navigation_Button(MAIN_MENU))
             .add(new Navigation_Button(FLIGHT_MENU))
-            .add(new Navigation_Button(DEVELOPER_MENU))
             .add(new Navigation_Button(BALL_GAME))
             .add(new Navigation_Button(WORD_TRAINER));
 }
